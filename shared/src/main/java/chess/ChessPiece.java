@@ -139,7 +139,7 @@ public class ChessPiece {
 
     private ArrayList<ChessMove> getKingMoves(ChessBoard board, ChessPosition initPosition) {
         var listOfMoves = new ArrayList<ChessMove>();
-        var directions = new int[][]{{1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}};
+        var directions = new int[][]{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
         var currPosition = initPosition;
 
         for (int i = 0; i < directions.length; i++) {
