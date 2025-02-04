@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -49,7 +50,36 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        // Copy's the board and gets piece and it's possible moves
+        ChessBoard boardCopy;
+        ChessPiece piece = board.getPiece(startPosition);
+        Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
+
+        // If in check, only allow moves that put person out of check
+
+        for (ChessMove move : moves) {
+            boardCopy = testMove(move, board.clone());
+            if (!isInCheck(piece.getTeamColor(), boardCopy)) {
+                validMoves.add(move);
+            }
+        }
+        return validMoves;
+    }
+
+    public ChessBoard testMove(ChessMove move, ChessBoard chessBoard) {
+
+        // Get the piece that is trying to move
+        ChessPiece piece = chessBoard.getPiece(move.getStartPosition());
+
+        // Add that piece to where it wants to go
+        chessBoard.addPiece(move.getEndPosition(), piece);
+
+        // remove the piece from its old square
+        chessBoard.removePiece(move.getStartPosition());
+
+        return chessBoard;
     }
 
     /**
@@ -88,7 +118,7 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor) {
+    public boolean isInCheck(TeamColor teamColor, ChessBoard chessBoard) {
         throw new RuntimeException("Not implemented");
     }
 
