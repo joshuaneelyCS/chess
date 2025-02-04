@@ -59,8 +59,27 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+
+        var validMovesList = validMoves(move.getStartPosition());
+
+        // Checks to see if the move is valid
+        if (!validMovesList.contains(move)) {
+            throw new InvalidMoveException("Invalid move: " + move);
+        }
+
         // Get the piece that is trying to move
-        board.getPiece(move.getStartPosition());
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+
+        // If it is a pawn promotion
+        if (move.getPromotionPiece() != null) {
+            piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+        }
+
+        // Add that piece to where it wants to go
+        board.addPiece(move.getEndPosition(), piece);
+
+        // remove the piece from its old square
+        board.removePiece(move.getStartPosition());
     }
 
     /**
