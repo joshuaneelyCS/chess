@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-
 public class ChessMoveTests {
     private ChessMove original;
     private ChessMove equal;
