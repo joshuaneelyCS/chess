@@ -57,8 +57,7 @@ public class ChessGame {
         ChessPiece piece = board.getPiece(startPosition);
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
 
-        // If in check, only allow moves that put person out of check
-
+        // Only allow moves that will get someone out of check
         for (ChessMove move : moves) {
             boardCopy = testMove(move, board.clone());
             if (!isInCheck(piece.getTeamColor(), boardCopy)) {
@@ -118,8 +117,30 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor, ChessBoard chessBoard) {
-        throw new RuntimeException("Not implemented");
+    public boolean isInCheck(TeamColor teamColor) {
+
+        // Go through each square on the board and see if any of the moves can take the king
+        ChessPiece piece;
+        Collection<ChessMove> moves;
+
+        for (int r = 1; r <= 8; r++){
+            for (int c = 1; c <= 8; c++){
+                piece = board.getPiece(new ChessPosition(r,c));
+
+                // gets the moves of all the pieces that are not on the same team
+                if (piece.getTeamColor() != teamColor) {
+                    moves = piece.pieceMoves(board, new ChessPosition(r, c));
+                    for (ChessMove move : moves) {
+                        ChessPosition landingSquare = move.getEndPosition();
+                        ChessPiece OpposingPiece = board.getPiece(landingSquare);
+                        if (OpposingPiece.getPieceType() == ChessPiece.PieceType.KING && OpposingPiece.getTeamColor() == teamColor) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
