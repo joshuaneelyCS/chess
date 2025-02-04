@@ -9,7 +9,16 @@ import java.util.Collection;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessGame {
+public class ChessGame implements Cloneable{
+
+    @Override
+    protected ChessGame clone() {
+        try {
+            return (ChessGame) super.clone();
+        } catch (CloneNotSupportedException e){
+            throw new RuntimeException(e);
+        }
+    }
 
     private TeamColor team_turn;
     private ChessBoard board = new ChessBoard();
@@ -53,14 +62,15 @@ public class ChessGame {
 
         Collection<ChessMove> validMoves = new ArrayList<>();
         // Copy's the board and gets piece and it's possible moves
-        ChessBoard boardCopy;
+        ChessGame gameCopy;
         ChessPiece piece = board.getPiece(startPosition);
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
 
         // Only allow moves that will get someone out of check
         for (ChessMove move : moves) {
-            boardCopy = testMove(move, board.clone());
-            if (!isInCheck(piece.getTeamColor(), boardCopy)) {
+            gameCopy = (ChessGame) clone();
+            testMove(move, gameCopy.getBoard());
+            if (!gameCopy.isInCheck(piece.getTeamColor())) {
                 validMoves.add(move);
             }
         }
