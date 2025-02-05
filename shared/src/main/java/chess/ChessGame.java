@@ -14,7 +14,9 @@ public class ChessGame implements Cloneable{
     @Override
     protected ChessGame clone() {
         try {
-            return (ChessGame) super.clone();
+            ChessGame clonedGame = (ChessGame) super.clone();
+            clonedGame.board = board.clone(); // Ensure deep copy of the board
+            return clonedGame;
         } catch (CloneNotSupportedException e){
             throw new RuntimeException(e);
         }
@@ -138,16 +140,21 @@ public class ChessGame implements Cloneable{
                 piece = board.getPiece(new ChessPosition(r,c));
 
                 // gets the moves of all the pieces that are not on the same team
-                if (piece.getTeamColor() != teamColor) {
+                if (piece != null && piece.getTeamColor() != teamColor) {
                     moves = piece.pieceMoves(board, new ChessPosition(r, c));
                     for (ChessMove move : moves) {
                         ChessPosition landingSquare = move.getEndPosition();
                         ChessPiece OpposingPiece = board.getPiece(landingSquare);
-                        if (OpposingPiece.getPieceType() == ChessPiece.PieceType.KING && OpposingPiece.getTeamColor() == teamColor) {
-                            return true;
+                        if (OpposingPiece != null && OpposingPiece.getTeamColor() == teamColor) {
+                            if (OpposingPiece.getPieceType() == ChessPiece.PieceType.KING ) {
+                                return true;
+                            }
                         }
                     }
+
                 }
+
+
             }
         }
         return false;
