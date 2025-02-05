@@ -146,12 +146,15 @@ public class ChessGame implements Cloneable{
 
                 // gets the moves of all the pieces that are not on the same team
                 if (piece != null && piece.getTeamColor() != teamColor) {
+                    // Gets the moves of opposing piece
                     moves = piece.pieceMoves(board, new ChessPosition(r, c));
+                    // For each move, can it attack the king?
                     for (ChessMove move : moves) {
                         ChessPosition landingSquare = move.getEndPosition();
                         ChessPiece OpposingPiece = board.getPiece(landingSquare);
                         if (OpposingPiece != null && OpposingPiece.getTeamColor() == teamColor) {
                             if (OpposingPiece.getPieceType() == ChessPiece.PieceType.KING ) {
+                                // if a move can attack the king, they are in check
                                 return true;
                             }
                         }
@@ -232,7 +235,7 @@ public class ChessGame implements Cloneable{
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
