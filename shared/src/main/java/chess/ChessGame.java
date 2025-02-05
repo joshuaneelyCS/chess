@@ -66,6 +66,11 @@ public class ChessGame implements Cloneable{
         // Copy's the board and gets piece and it's possible moves
         ChessGame gameCopy;
         ChessPiece piece = board.getPiece(startPosition);
+
+        if (piece == null) {
+            return null;
+        }
+
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
 
         // Only allow moves that will get someone out of check
@@ -151,10 +156,7 @@ public class ChessGame implements Cloneable{
                             }
                         }
                     }
-
                 }
-
-
             }
         }
         return false;
@@ -167,7 +169,21 @@ public class ChessGame implements Cloneable{
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece;
+        Collection<ChessMove> moves;
+
+        if(isInCheck(teamColor)) {
+            for (int r = 1; r <= 8; r++) {
+                for (int c = 1; c <= 8; c++) {
+                    moves = validMoves(new ChessPosition(r,c));
+                    piece = board.getPiece(new ChessPosition(r,c));
+                    if (moves != null && piece.getTeamColor() == teamColor) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
