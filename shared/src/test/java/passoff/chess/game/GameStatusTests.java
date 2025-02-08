@@ -89,6 +89,7 @@ public class GameStatusTests {
     public void whiteTeamCheckmate() {
 
         var game = new ChessGame();
+        System.out.println(game.getBoard());
         game.setBoard(TestUtilities.loadBoard("""
                 | | | | | | | | |
                 | | |b|q| | | | |
@@ -99,6 +100,7 @@ public class GameStatusTests {
                 | | | | |n| | | |
                 | | | | | | | | |
                 """));
+        System.out.println(game.getBoard());
         game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
         Assertions.assertTrue(game.isInCheckmate(ChessGame.TeamColor.WHITE), MISSING_WHITE_CHECKMATE);
