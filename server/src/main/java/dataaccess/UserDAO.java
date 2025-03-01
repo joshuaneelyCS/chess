@@ -1,7 +1,8 @@
 package dataaccess;
+import model.UserData;
 
 public interface UserDAO {
-    User getUser();
-    boolean createUser();
-    boolean deleteAllUsers();
+    UserData getUser(String username) throws DataAccessException;
+    boolean createUser(UserData data) throws DataAccessException;
+    boolean deleteAllUsers() throws DataAccessException;
 }

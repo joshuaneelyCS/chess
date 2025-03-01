@@ -12,4 +12,8 @@ public class GameData {
     public GameData() {
 
     }
+
+    public int getGameID() {
+        return gameID;
+    }
 }

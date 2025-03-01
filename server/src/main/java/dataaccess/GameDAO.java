@@ -4,8 +4,8 @@ import java.util.List;
 
 public interface GameDAO {
 
-    List<GameData> getAllGames();
-    int createGame(GameData game);
-    GameData getGame(int id);
-    void deleteAllGames();
+    List<GameData> getAllGames() throws DataAccessException;
+    int createGame(GameData game) throws DataAccessException;
+    GameData getGame(int id) throws DataAccessException;
+    void deleteAllGames() throws DataAccessException;
 }
