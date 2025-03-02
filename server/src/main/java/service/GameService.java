@@ -41,7 +41,6 @@ public class GameService {
             int id = createID();
             gameDAO.createGame(new GameData(id, gameName));
             return id;
-
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: Unauthorized access - Invalid token");
         }

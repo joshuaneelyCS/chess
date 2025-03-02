@@ -8,13 +8,13 @@ import java.util.UUID;
 
 public class UserService {
 
-    record RegisterRequest(String username, String password, String email) { }
+    public record RegisterRequest(String username, String password, String email) { }
 
-    record LoginRequest(String username, String password) { }
+    public record LoginRequest(String username, String password) { }
 
-    record LoginResult(String token, String username) { }
+    public record LoginResult(String token, String username) { }
 
-    record RegisterResult(String token, String username) { }
+    public record RegisterResult(String token, String username) { }
 
     private final MemoryAuthDAO authDAO;
     private final MemoryUserDAO userDAO;
@@ -44,13 +44,17 @@ public class UserService {
         return new RegisterResult(token, authData.getUsername());
     }
 
-    public LoginResult login(LoginRequest request) {
+    public LoginResult login(LoginRequest request) throws UserNotFoundException, IncorrectPasswordException {
+
         UserData user = userDAO.getUser(request.username);
         if (user == null) {
             throw new UserNotFoundException("Error: User not found");
         }
+        System.out.println(user.getPassword());
+        System.out.println(request.password);
         if (user.getPassword() != request.password) {
-            throw new IncorrectPassword("Error: Passwords do not match");
+            System.out.println("Here");
+            throw new IncorrectPasswordException("Error: Passwords do not match");
         }
         // user token is stored in auth data
         String token = generateToken();
