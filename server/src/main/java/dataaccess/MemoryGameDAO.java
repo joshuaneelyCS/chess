@@ -23,12 +23,12 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public GameData getGame(int id) {
-        return null;
+        return games.get(id);
     }
 
     @Override
     public void deleteAllGames() {
-
+        games.clear();
     }
 
 }
