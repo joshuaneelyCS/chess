@@ -12,4 +12,8 @@ public class UserData {
         this.email = email;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
 }

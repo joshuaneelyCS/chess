@@ -4,16 +4,11 @@ import org.eclipse.jetty.server.Authentication;
 
 public class UserService {
 
-    public static class RegisterRequest {
-        private String username;
-        private String password;
-        private String email;
-    }
+    record RegisterRequest(String username, String password, String email) { }
 
-    public static class LoginRequest {
-        private String username;
-        private String password;
-    }
+    record LoginRequest(String username, String password) { }
+
+    record LoginResult(String token, String username) { }
 
     public String register(RegisterRequest request) {
         return "";
@@ -23,7 +18,7 @@ public class UserService {
         return "";
     }
 
-    public void logout() {
+    public void logout(String token) {
 
     }
 }
