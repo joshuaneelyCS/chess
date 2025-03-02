@@ -52,7 +52,7 @@ public class UserService {
         }
         System.out.println(user.getPassword());
         System.out.println(request.password);
-        if (user.getPassword() != request.password) {
+        if (!user.getPassword().equals(request.password)) {
             System.out.println("Here");
             throw new IncorrectPasswordException("Error: Passwords do not match");
         }
