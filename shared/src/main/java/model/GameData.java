@@ -9,11 +9,22 @@ public class GameData {
     private String gameName;
     private ChessGame game;
 
-    public GameData() {
-
+    public GameData(int gameID, String gameName) {
+        this.gameID = gameID;
+        this.gameName = gameName;
     }
 
     public int getGameID() {
         return gameID;
+    }
+
+    public void setTeam(String playerColor, String username) throws GameAlreadyTakenException {
+        if (playerColor.equals("WHITE") && whiteUsername == null) {
+            this.whiteUsername = username;
+        } else if (playerColor.equals("BLACK") && blackUsername == null) {
+            this.blackUsername = username;
+        } else {
+            throw new GameAlreadyTakenException("Error: Team Color already taken");
+        }
     }
 }

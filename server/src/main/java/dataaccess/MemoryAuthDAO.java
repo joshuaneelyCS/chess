@@ -18,8 +18,13 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public AuthData getAuth(String token) {
-        return signedIn.get(token);
+    public AuthData getAuth(String token) throws DataAccessException {
+        if (signedIn.containsKey(token)) {
+            return signedIn.get(token);
+        } else {
+            throw new DataAccessException("Error: No token found!");
+        }
+
     }
 
     @Override
