@@ -22,12 +22,12 @@ public class UserHandler {
             res.type("application/json");
 
             try {
+
                 UserService.RegisterRequest registerRequest = gson.fromJson(req.body(), UserService.RegisterRequest.class);
                 UserService.RegisterResult result = userService.register(registerRequest);
-                System.out.println(result);
-
                 res.status(200);
                 return gson.toJson(result);
+
             } catch (DataAccessException e) {
                 res.status(500);
                 return gson.toJson(e.getMessage());
@@ -63,7 +63,7 @@ public class UserHandler {
 
                 if (token == null || token.isEmpty()) {
                     res.status(401);
-                    return gson.toJson("Error");
+                    return gson.toJson("Unauthorized");
                 }
 
                 userService.logout(token);
@@ -78,4 +78,6 @@ public class UserHandler {
             }
         };
     }
+
+
 }
