@@ -29,12 +29,8 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
-    public RegisterResult register(RegisterRequest request) {
+    public RegisterResult register(RegisterRequest request) throws DataAccessException {
 
-        // if user already exists
-        if (userDAO.getUser(request.username) != null) {
-            throw new UserAlreadyExistsException("Error: The user already exists"); // Error: The user already exists
-        }
         // user is successfully created
         userDAO.createUser(new UserData(request.username, request.password, request.email));
         // user token is stored in auth data
@@ -43,6 +39,7 @@ public class UserService {
         authDAO.createAuth(authData);
         // return success
         return new RegisterResult(token, authData.getUsername());
+
     }
 
     public LoginResult login(LoginRequest request) throws UserNotFoundException, IncorrectPasswordException {

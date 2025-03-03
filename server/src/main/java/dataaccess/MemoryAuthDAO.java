@@ -9,11 +9,11 @@ public class MemoryAuthDAO implements AuthDAO {
 
     @Override
     public void createAuth(AuthData auth) {
-        signedIn.put(auth.getUsername(), auth);
+        signedIn.put(auth.getAuthToken(), auth);
     }
 
     @Override
-    public void removeAuth(String token) throws DataAccessException{
+    public void removeAuth(String token) throws DataAccessException {
         if (signedIn.containsKey(token)) {
             signedIn.remove(token);
         } else {

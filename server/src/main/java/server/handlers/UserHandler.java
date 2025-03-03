@@ -28,9 +28,9 @@ public class UserHandler {
 
                 res.status(200);
                 return gson.toJson(result);
-            } catch (Exception e) {
+            } catch (DataAccessException e) {
                 res.status(500);
-                return gson.toJson(e);
+                return gson.toJson(e.getMessage());
             }
         };
     }
