@@ -5,6 +5,7 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.GameAlreadyTakenException;
 import model.GameData;
+import model.InvalidColorException;
 
 import java.util.List;
 import java.util.Random;
@@ -23,6 +24,8 @@ public class GameService {
     public record createGameRequest(String gameName) {}
 
     public record createGameResult(int gameID) {}
+
+    public record joinGameRequest(String token, String playerColor, int gameID) {};
 
     public GameService(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
         this.gameDAO = gameDAO;
@@ -48,22 +51,12 @@ public class GameService {
         }
     }
 
-    public String joinGame(String token, String playerColor, int GameID) throws DataAccessException, GameAlreadyTakenException {
-        try {
-            String username = authDAO.getAuth(token).getUsername();
-            GameData game = gameDAO.getGame(GameID);
+    public void joinGame(joinGameRequest req) throws DataAccessException, GameAlreadyTakenException, InvalidColorException {
 
-            try {
-                game.setTeam(playerColor, username);
-                return "Success";
-            } catch (GameAlreadyTakenException e) {
-                throw new GameAlreadyTakenException(e.getMessage());
-            }
+        String username = authDAO.getAuth(req.token).getUsername();
+        GameData game = gameDAO.getGame(req.gameID);
 
-
-        } catch (DataAccessException e) {
-            throw new DataAccessException("Error: Unauthorized access - Invalid token");
-        }
+        game.setTeam(req.playerColor, username);
     }
 
     public void clearDatabase() throws DataAccessException {

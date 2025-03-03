@@ -22,7 +22,10 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public GameData getGame(int id) {
+    public GameData getGame(int id) throws DataAccessException {
+        if (!games.containsKey(id)) {
+            throw new DataAccessException("Game with ID " + id + " not found");
+        }
         return games.get(id);
     }
 

@@ -1,14 +1,20 @@
 package server.handlers;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
+import model.GameAlreadyTakenException;
 import model.GameData;
+import model.InvalidColorException;
 import service.GameService;
 import service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import javax.xml.crypto.Data;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +97,52 @@ public class GameHandler {
             } catch (DataAccessException e) {
                 res.status(500);
                 return gson.toJson("Unable to create game");
+            }
+        };
+    }
+
+    public Route joinGame() {
+        return (Request req, Response res) -> {
+            res.type("application/json");
+            try {
+                if (!tokenAuthorize(req)) {
+                    res.status(401);
+                    return gson.toJson("unauthorized");
+                }
+                String token = req.headers("Authorization");
+
+                // Parse JSON request body safely
+                GameService.joinGameRequest requestBody;
+
+                try {
+                    requestBody = gson.fromJson(req.body(), GameService.joinGameRequest.class);
+
+                    // Validate required fields
+                    if (requestBody == null || requestBody.playerColor() == null || requestBody.gameID() == 0) {
+                        throw new IllegalArgumentException("Missing required fields");
+                    }
+
+                } catch (JsonSyntaxException | IllegalArgumentException e) {
+                    res.status(400);
+                    return gson.toJson("bad request");
+                }
+
+                GameService.joinGameRequest joinGameRequest =
+                        new GameService.joinGameRequest(token, requestBody.playerColor(), requestBody.gameID());
+
+                gameService.joinGame(joinGameRequest);
+                res.status(200);
+                return gson.toJson("");
+
+            } catch (DataAccessException e) {
+                res.status(500);
+                return gson.toJson("unable to join game");
+            } catch (GameAlreadyTakenException e) {
+                res.status(403);
+                return gson.toJson("already taken");
+            } catch (InvalidColorException e) {
+                res.status(500);
+                return gson.toJson(e.getMessage());
             }
         };
     }

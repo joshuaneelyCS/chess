@@ -22,13 +22,15 @@ public class GameData {
         return gameName;
     }
 
-    public void setTeam(String playerColor, String username) throws GameAlreadyTakenException {
-        if (playerColor.equals("WHITE") && whiteUsername == null) {
+    public void setTeam(String playerColor, String username) throws GameAlreadyTakenException, InvalidColorException {
+        if (playerColor.equals("WHITE") && whiteUsername == "") {
             this.whiteUsername = username;
-        } else if (playerColor.equals("BLACK") && blackUsername == null) {
+        } else if (playerColor.equals("BLACK") && blackUsername == "") {
             this.blackUsername = username;
-        } else {
+        } else if (!whiteUsername.equals("")) {
             throw new GameAlreadyTakenException("Error: Team Color already taken");
+        } else {
+            throw new InvalidColorException("Error: Team Color invalid");
         }
     }
 }
