@@ -13,9 +13,9 @@ public class UserService {
 
     public record LoginRequest(String username, String password) { }
 
-    public record LoginResult(String token, String username) { }
+    public record LoginResult(String authToken, String username) { }
 
-    public record RegisterResult(String token, String username) { }
+    public record RegisterResult(String authToken, String username) { }
 
     private final MemoryAuthDAO authDAO;
     private final MemoryUserDAO userDAO;

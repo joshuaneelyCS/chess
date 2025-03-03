@@ -8,6 +8,8 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.Map;
+
 public class UserHandler {
 
     private static final Gson gson = new Gson();
@@ -26,11 +28,11 @@ public class UserHandler {
                 UserService.RegisterRequest registerRequest = gson.fromJson(req.body(), UserService.RegisterRequest.class);
                 UserService.RegisterResult result = userService.register(registerRequest);
                 res.status(200);
-                return gson.toJson(result);
+                return gson.toJson(Map.of("message", "User Created Successfully"));
 
             } catch (DataAccessException e) {
                 res.status(500);
-                return gson.toJson(e.getMessage());
+                return gson.toJson(Map.of("message", "Error: User could not be created"));
             }
         };
     }
