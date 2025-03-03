@@ -1,5 +1,6 @@
 package server.handlers;
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import service.IncorrectPasswordException;
 import service.UserNotFoundException;
 import service.UserService;
@@ -47,6 +48,31 @@ public class UserHandler {
                 res.status(200);
                 return gson.toJson(result);
             } catch (UserNotFoundException | IncorrectPasswordException e) {
+                res.status(500);
+                return gson.toJson(e.getMessage());
+            }
+        };
+    }
+
+    public Route logout() {
+        return (Request req, Response res) -> {
+            res.type("application/json");
+
+            try {
+                String token = req.headers("Authorization");
+
+                if (token == null || token.isEmpty()) {
+                    res.status(401);
+                    return gson.toJson("Error");
+                }
+
+                userService.logout(token);
+
+                res.status(200);
+                return gson.toJson(res.status());
+
+            } catch (DataAccessException e) {
+
                 res.status(500);
                 return gson.toJson(e.getMessage());
             }

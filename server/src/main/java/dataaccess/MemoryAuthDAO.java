@@ -13,8 +13,12 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void removeAuth(String token) {
-        signedIn.remove(token);
+    public void removeAuth(String token) throws DataAccessException{
+        if (signedIn.containsKey(token)) {
+            signedIn.remove(token);
+        } else {
+            throw new DataAccessException("Error: No token found!");
+        }
     }
 
     @Override
