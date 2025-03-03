@@ -43,11 +43,11 @@ public class GameHandler {
             try {
                 gameService.clearDatabase();
                 res.status(200);
-                return gson.toJson("success");
+                return gson.toJson(Map.of("message", "Application cleared successfully"));
 
             } catch (DataAccessException e) {
                 res.status(500);
-                return gson.toJson("Unable to clear Application");
+                return gson.toJson(Map.of("message", "Unable to clear Application"));
             }
         };
     }
@@ -59,20 +59,15 @@ public class GameHandler {
             try {
                 if (!tokenAuthorize(req)) {
                     res.status(401);
-                    return gson.toJson("Unauthorized");
+                    return gson.toJson(Map.of("message", "Error: Unauthorized"));
                 }
 
                 List<GameData> games = gameService.listGames();
-
-                Map<String, List<GameData>> response = new HashMap<>();
-                response.put("games", games);
-
-                res.status(200);
-                return gson.toJson(response);
+                return gson.toJson(Map.of("games", games));
 
             } catch (DataAccessException e) {
                 res.status(500);
-                return gson.toJson("Unable to list games");
+                return gson.toJson(Map.of("message", "Error: Unable to list games"));
             }
         };
     }
@@ -82,10 +77,9 @@ public class GameHandler {
             res.type("application/json");
 
             try {
-
                 if (!tokenAuthorize(req)) {
                     res.status(401);
-                    return gson.toJson("Unauthorized");
+                    return gson.toJson(Map.of("message", "Error: Unauthorized"));
                 }
 
                 GameService.createGameRequest createGameRequest = gson.fromJson(req.body(), GameService.createGameRequest.class);
@@ -94,9 +88,12 @@ public class GameHandler {
                 res.status(200);
                 return gson.toJson(result);
 
+            } catch (JsonSyntaxException e) {
+                res.status(400);
+                return gson.toJson(Map.of("message", "Error: Bad request - Invalid JSON format"));
             } catch (DataAccessException e) {
                 res.status(500);
-                return gson.toJson("Unable to create game");
+                return gson.toJson(Map.of("message", "Error: Unable to create game"));
             }
         };
     }
@@ -104,16 +101,17 @@ public class GameHandler {
     public Route joinGame() {
         return (Request req, Response res) -> {
             res.type("application/json");
+
             try {
                 if (!tokenAuthorize(req)) {
                     res.status(401);
-                    return gson.toJson("unauthorized");
+                    return gson.toJson(Map.of("message", "Error: Unauthorized"));
                 }
+
                 String token = req.headers("Authorization");
 
                 // Parse JSON request body safely
                 GameService.joinGameRequest requestBody;
-
                 try {
                     requestBody = gson.fromJson(req.body(), GameService.joinGameRequest.class);
 
@@ -121,28 +119,28 @@ public class GameHandler {
                     if (requestBody == null || requestBody.playerColor() == null || requestBody.gameID() == 0) {
                         throw new IllegalArgumentException("Missing required fields");
                     }
-
                 } catch (JsonSyntaxException | IllegalArgumentException e) {
                     res.status(400);
-                    return gson.toJson("bad request");
+                    return gson.toJson(Map.of("message", "Error: Bad request - Missing or invalid fields"));
                 }
 
                 GameService.joinGameRequest joinGameRequest =
                         new GameService.joinGameRequest(token, requestBody.playerColor(), requestBody.gameID());
 
                 gameService.joinGame(joinGameRequest);
+
                 res.status(200);
-                return gson.toJson("");
+                return gson.toJson(Map.of("message", "Success: Joined game"));
 
             } catch (DataAccessException e) {
                 res.status(500);
-                return gson.toJson("unable to join game");
+                return gson.toJson(Map.of("message", "Error: Unable to join game"));
             } catch (GameAlreadyTakenException e) {
                 res.status(403);
-                return gson.toJson("already taken");
+                return gson.toJson(Map.of("message", "Error: Game already taken"));
             } catch (InvalidColorException e) {
-                res.status(500);
-                return gson.toJson(e.getMessage());
+                res.status(400);
+                return gson.toJson(Map.of("message", "Error: Invalid color selection"));
             }
         };
     }
