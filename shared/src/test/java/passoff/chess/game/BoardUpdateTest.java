@@ -25,8 +25,6 @@ public class BoardUpdateTest {
                 |R|N|B|Q|K|B|N|R|
          */
         game.makeMove(new ChessMove(new ChessPosition(7, 5), new ChessPosition(5, 5), null));
-        game.makeMove(new ChessMove(new ChessPosition(2, 5), new ChessPosition(4, 5), null));
-
         /*
                 |r|n|b|q|k|b|n|r|
                 |p|p|p|p| |p|p|p|
@@ -38,7 +36,6 @@ public class BoardUpdateTest {
                 |R|N|B|Q|K|B|N|R|
          */
         // Try to get the pawn on (2,5)
-        game.makeMove(new ChessMove(new ChessPosition(2, 5), new ChessPosition(4, 5), null));
         game.makeMove(new ChessMove(new ChessPosition(1, 6), new ChessPosition(4, 3), null));
         /*
                 |r|n|b|q|k|b|n|r|
@@ -61,8 +58,7 @@ public class BoardUpdateTest {
                 |P|P|P|P| |P|P|P|
                 |R|N|B|Q|K| |N|R|
          */
-        game.makeMove(new ChessMove(new ChessPosition(2, 5), new ChessPosition(4, 5), null));
-        // game.makeMove(new ChessMove(new ChessPosition(1, 4), new ChessPosition(5, 8), null));
+        game.makeMove(new ChessMove(new ChessPosition(1, 4), new ChessPosition(5, 8), null));
         /*
                 |r|n|b|q|k|b| |r|
                 |p|p|p|p| |p|p|p|
