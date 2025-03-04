@@ -24,15 +24,17 @@ public class UserHandler {
             res.type("application/json");
 
             try {
-
                 UserService.RegisterRequest registerRequest = gson.fromJson(req.body(), UserService.RegisterRequest.class);
                 UserService.RegisterResult result = userService.register(registerRequest);
                 res.status(200);
-                return gson.toJson(Map.of("message", "User Created Successfully"));
+                return gson.toJson(result);
 
             } catch (DataAccessException e) {
-                res.status(500);
-                return gson.toJson(Map.of("message", "Error: User could not be created"));
+                res.status(403);
+                return gson.toJson(Map.of("message", "Error: Username already exists"));
+            } catch (IncorrectPasswordException e) {
+                res.status(400);
+                return gson.toJson(Map.of("message", "Error: Please fill in all fields"));
             }
         };
     }
@@ -49,9 +51,12 @@ public class UserHandler {
                 System.out.println("Here is the result: " + result);
                 res.status(200);
                 return gson.toJson(result);
-            } catch (UserNotFoundException | IncorrectPasswordException e) {
-                res.status(500);
-                return gson.toJson(e.getMessage());
+            } catch (UserNotFoundException e) {
+                res.status(401);
+                return gson.toJson(Map.of("message", "Error: User not found"));
+            } catch (IncorrectPasswordException e) {
+                res.status(401);
+                return gson.toJson(Map.of("message", "Error: Incorrect Password"));
             }
         };
     }
@@ -71,12 +76,12 @@ public class UserHandler {
                 userService.logout(token);
 
                 res.status(200);
-                return gson.toJson(res.status());
+                return gson.toJson(Map.of("message", "Success"));
 
             } catch (DataAccessException e) {
 
-                res.status(500);
-                return gson.toJson(e.getMessage());
+                res.status(401);
+                return gson.toJson(Map.of("message", "Error: token not found"));
             }
         };
     }

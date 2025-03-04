@@ -29,7 +29,12 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
-    public RegisterResult register(RegisterRequest request) throws DataAccessException {
+    public RegisterResult register(RegisterRequest request) throws DataAccessException, IncorrectPasswordException {
+
+        // if fields are empty
+        if (request.username == null || request.password == null) {
+            throw new IncorrectPasswordException("");
+        }
 
         // user is successfully created
         userDAO.createUser(new UserData(request.username, request.password, request.email));

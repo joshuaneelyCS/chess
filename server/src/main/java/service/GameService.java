@@ -21,7 +21,7 @@ public class GameService {
         return random.nextInt(1_000_000); // Generates a random number between 0 and 999,999
     }
 
-    public record createGameRequest(String gameName) {}
+    public record createGameRequest(String token, String gameName) {}
 
     public record createGameResult(int gameID) {}
 
@@ -33,8 +33,11 @@ public class GameService {
         this.userDAO = userDAO;
     }
 
-    public List<GameData> listGames() throws DataAccessException {
+    public List<GameData> listGames(String token) throws DataAccessException {
         try {
+            if (authDAO.getAuth(token) == null) {
+                throw new DataAccessException("Error: Unauthorized access - Invalid token");
+            };
             return gameDAO.getAllGames(); // Return the list of games if authenticated
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: Unauthorized access - Invalid token");
@@ -43,6 +46,7 @@ public class GameService {
 
     public createGameResult createGame(createGameRequest req) throws DataAccessException {
         try {
+            authDAO.getAuth(req.token);
             int id = createID();
             gameDAO.createGame(new GameData(id, req.gameName));
             return new createGameResult(id);
@@ -60,12 +64,10 @@ public class GameService {
     }
 
     public void clearDatabase() throws DataAccessException {
-        try {
-            gameDAO.deleteAllGames();
-            userDAO.deleteAllUsers();
-            authDAO.deleteAllAuth();
-        } catch (DataAccessException e) {
-            throw new DataAccessException("Could not access and clear data");
-        }
+
+        gameDAO.deleteAllGames();
+        userDAO.deleteAllUsers();
+        authDAO.deleteAllAuth();
+
     }
 }

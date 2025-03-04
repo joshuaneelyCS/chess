@@ -1,7 +1,10 @@
 package dataaccess;
+import model.GameData;
 import model.UserData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MemoryUserDAO implements UserDAO {
 
@@ -27,5 +30,10 @@ public class MemoryUserDAO implements UserDAO {
     @Override
     public void deleteAllUsers() {
         users.clear();
+    }
+
+    @Override
+    public List<UserData> getAllUsers() {
+        return new ArrayList<>(users.values());
     }
 }
