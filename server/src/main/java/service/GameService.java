@@ -1,8 +1,8 @@
 package service;
-import dataaccess.AuthDAO;
+import dataaccess.interfaces.AuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.interfaces.GameDAO;
+import dataaccess.interfaces.UserDAO;
 import model.GameAlreadyTakenException;
 import model.GameData;
 import model.InvalidColorException;

@@ -1,4 +1,5 @@
-package dataaccess;
+package dataaccess.interfaces;
+import dataaccess.DataAccessException;
 import model.UserData;
 
 import java.util.List;
