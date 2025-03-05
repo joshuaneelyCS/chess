@@ -1,10 +1,8 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
-import model.AuthData;
-import model.UserData;
+import dataaccess.memoryImplimentation.MemoryAuthDAO;
+import dataaccess.memoryImplimentation.MemoryUserDAO;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,10 +1,9 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
-import model.AuthData;
+import dataaccess.memoryImplimentation.MemoryAuthDAO;
+import dataaccess.memoryImplimentation.MemoryGameDAO;
+import dataaccess.memoryImplimentation.MemoryUserDAO;
 import model.GameData;
 import model.GameAlreadyTakenException;
 import model.InvalidColorException;
