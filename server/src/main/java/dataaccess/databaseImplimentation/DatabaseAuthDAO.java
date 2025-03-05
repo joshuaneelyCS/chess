@@ -1,14 +1,16 @@
 package dataaccess.databaseImplimentation;
 
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
+import dataaccess.ResponseException;
 import dataaccess.interfaces.AuthDAO;
 import model.AuthData;
 
+import java.sql.Connection;
 import java.util.List;
 
-public class DatabaseAuthDAO implements AuthDAO {
+public class DatabaseAuthDAO extends DatabaseDAO implements AuthDAO {
 
-    // create the database
     // connect to the database
 
     @Override
@@ -35,4 +37,6 @@ public class DatabaseAuthDAO implements AuthDAO {
     public List<AuthData> getAllAuth() throws DataAccessException {
         return List.of();
     }
+
+
 }
