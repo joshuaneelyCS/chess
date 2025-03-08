@@ -2,13 +2,14 @@ package dataaccess.databaseImplimentation;
 
 import chess.ChessGame;
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
 import dataaccess.interfaces.GameDAO;
 import model.GameData;
 
 import java.util.List;
 
-public class DatabaseGameDAO extends DatabaseDAO implements GameDAO {
+public class DatabaseGameDAO implements GameDAO {
 
     private final String[] createStatements = {
             """
@@ -18,13 +19,13 @@ public class DatabaseGameDAO extends DatabaseDAO implements GameDAO {
               `black_username` varchar(256),
               `game_name` varchar(256),
               `chess_game` JSON NOT NULL,
-              PRIMARY KEY (`authToken`),
+              PRIMARY KEY (`game_id`)
             ) 
             """
     };
 
     public DatabaseGameDAO() throws ResponseException, DataAccessException {
-        super.createTables(createStatements);
+        DatabaseManager.createTables(createStatements);
     }
 
     @Override

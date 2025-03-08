@@ -6,30 +6,32 @@ import dataaccess.ResponseException;
 import dataaccess.interfaces.AuthDAO;
 import model.AuthData;
 
+import java.awt.image.RescaleOp;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class DatabaseAuthDAO extends DatabaseDAO implements AuthDAO {
+public class DatabaseAuthDAO implements AuthDAO {
 
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS auth (
               `authToken` varchar(256) NOT NULL,
-              `username` varchar(256) NOT NULL
-              PRIMARY KEY (`authToken`),
+              `username` varchar(256) NOT NULL,
+              PRIMARY KEY (`authToken`)
             ) 
             """
     };
 
     public DatabaseAuthDAO() throws ResponseException, DataAccessException {
-        super.createTables(createStatements);
+        DatabaseManager.createTables(createStatements);
     }
     // connect to the database
 
     @Override
-    public void createAuth(AuthData auth) throws DataAccessException {
-
+    public void createAuth(AuthData auth) throws ResponseException {
+        var statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
+        DatabaseManager.executeUpdate(statement, auth.getAuthToken(), auth.getUsername());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package dataaccess.databaseImplimentation;
 
+import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
@@ -9,21 +10,21 @@ import model.UserData;
 import java.sql.SQLException;
 import java.util.List;
 
-public class DatabaseUserDAO extends DatabaseDAO implements UserDAO {
+public class DatabaseUserDAO implements UserDAO {
 
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS users (
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
-              `email` varchar(256)
-              PRIMARY KEY (`username`),
+              `email` varchar(256),
+              PRIMARY KEY (`username`)
             ) 
             """
     };
 
     public DatabaseUserDAO () throws DataAccessException {
-        super.createTables(createStatements);
+        DatabaseManager.createTables(createStatements);
     }
 
     @Override
@@ -32,8 +33,9 @@ public class DatabaseUserDAO extends DatabaseDAO implements UserDAO {
     }
 
     @Override
-    public void createUser(UserData data) throws DataAccessException {
-
+    public void createUser(UserData data) throws ResponseException {
+        var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+        DatabaseManager.executeUpdate(statement, data.getUsername(), data.getPassword(), data.getEmail());
     }
 
     @Override

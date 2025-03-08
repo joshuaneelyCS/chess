@@ -1,10 +1,13 @@
 package service;
 
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import dataaccess.interfaces.AuthDAO;
 import dataaccess.interfaces.UserDAO;
 import model.AuthData;
 import model.UserData;
+import spark.Response;
+
 import java.util.UUID;
 
 public class UserService {
@@ -29,7 +32,7 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
-    public RegisterResult register(RegisterRequest request) throws DataAccessException, IncorrectPasswordException {
+    public RegisterResult register(RegisterRequest request) throws DataAccessException, IncorrectPasswordException, ResponseException {
 
         // if fields are empty
         if (request.username == null || request.password == null) {

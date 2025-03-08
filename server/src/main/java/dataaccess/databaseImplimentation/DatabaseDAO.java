@@ -7,18 +7,24 @@ import dataaccess.interfaces.AuthDAO;
 import dataaccess.interfaces.DAO;
 import dataaccess.interfaces.GameDAO;
 import dataaccess.interfaces.UserDAO;
+import com.google.gson.Gson;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
 
 import java.sql.SQLException;
 
 public class DatabaseDAO implements DAO {
 
-    private final AuthDAO authDAO = new DatabaseAuthDAO();
-    private final UserDAO userDAO = new DatabaseUserDAO();
-    private final GameDAO gameDAO = new DatabaseGameDAO();
+    private AuthDAO authDAO;
+    private UserDAO userDAO;
+    private GameDAO gameDAO;
 
     // create the database
     public DatabaseDAO() throws ResponseException, DataAccessException {
         createDatabase();
+        authDAO = new DatabaseAuthDAO();
+        userDAO = new DatabaseUserDAO();
+        gameDAO = new DatabaseGameDAO();
     }
 
     @Override
@@ -38,17 +44,5 @@ public class DatabaseDAO implements DAO {
 
     private void createDatabase() throws ResponseException, DataAccessException {
         DatabaseManager.createDatabase();
-    }
-
-    public static void createTables(String[] createStatements) throws ResponseException, DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new ResponseException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
     }
 }

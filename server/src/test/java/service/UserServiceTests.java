@@ -1,7 +1,11 @@
 package service;
 
 import dataaccess.DataAccessException;
+import dataaccess.databaseImplimentation.DatabaseAuthDAO;
+import dataaccess.databaseImplimentation.DatabaseDAO;
+import dataaccess.interfaces.DAO;
 import dataaccess.memoryImplimentation.MemoryAuthDAO;
+import dataaccess.memoryImplimentation.MemoryDAO;
 import dataaccess.memoryImplimentation.MemoryUserDAO;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,14 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserServiceTests {
 
     private UserService userService;
-    private MemoryAuthDAO authDAO;
-    private MemoryUserDAO userDAO;
+    private DAO dao;
 
     @BeforeEach
-    public void setup() {
-        authDAO = new MemoryAuthDAO();
-        userDAO = new MemoryUserDAO();
-        userService = new UserService(authDAO, userDAO);
+    public void setup() throws DataAccessException {
+        dao = new DatabaseDAO();
+        userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
     }
 
     //  Positive Tests
@@ -57,14 +59,14 @@ public class UserServiceTests {
         UserService.RegisterResult result = userService.register(request);
 
         // Ensure token exists before logout
-        assertNotNull(authDAO.getAuth(result.authToken()), "Auth should exist before logout");
+        assertNotNull(dao.getAuthDAO().getAuth(result.authToken()), "Auth should exist before logout");
 
         // Logout
         userService.logout(result.authToken());
 
         // Ensure token is removed
         assertThrows(DataAccessException.class, () -> {
-            authDAO.getAuth(result.authToken());
+            dao.getAuthDAO().getAuth(result.authToken());
         }, "Fetching the token after logout should throw DataAccessException");
     }
 
