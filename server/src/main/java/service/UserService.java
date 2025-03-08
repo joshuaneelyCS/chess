@@ -1,8 +1,8 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.memoryImplimentation.MemoryAuthDAO;
-import dataaccess.memoryImplimentation.MemoryUserDAO;
+import dataaccess.interfaces.AuthDAO;
+import dataaccess.interfaces.UserDAO;
 import model.AuthData;
 import model.UserData;
 import java.util.UUID;
@@ -17,10 +17,10 @@ public class UserService {
 
     public record RegisterResult(String authToken, String username) { }
 
-    private final MemoryAuthDAO authDAO;
-    private final MemoryUserDAO userDAO;
+    private final AuthDAO authDAO;
+    private final UserDAO userDAO;
 
-    public UserService(MemoryAuthDAO authDAO, MemoryUserDAO userDAO) {
+    public UserService(AuthDAO authDAO, UserDAO userDAO) {
         this.authDAO = authDAO;
         this.userDAO = userDAO;
     }
@@ -47,7 +47,7 @@ public class UserService {
 
     }
 
-    public LoginResult login(LoginRequest request) throws UserNotFoundException, IncorrectPasswordException {
+    public LoginResult login(LoginRequest request) throws UserNotFoundException, IncorrectPasswordException, DataAccessException {
 
         UserData user = userDAO.getUser(request.username);
         if (user == null) {

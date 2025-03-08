@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MemoryUserDAO extends MemoryDAO implements UserDAO {
+public class MemoryUserDAO implements UserDAO {
 
     HashMap<String, UserData> users = new HashMap<>();
 

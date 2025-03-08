@@ -1,6 +1,11 @@
 package server;
 
+import dataaccess.interfaces.AuthDAO;
+import dataaccess.interfaces.DAO;
+import dataaccess.interfaces.GameDAO;
+import dataaccess.interfaces.UserDAO;
 import dataaccess.memoryImplimentation.MemoryAuthDAO;
+import dataaccess.memoryImplimentation.MemoryDAO;
 import dataaccess.memoryImplimentation.MemoryUserDAO;
 import dataaccess.memoryImplimentation.MemoryGameDAO;
 import server.handlers.GameHandler;
@@ -15,14 +20,13 @@ public class Server {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
 
-        MemoryAuthDAO authDAO = new MemoryAuthDAO();
-        MemoryUserDAO userDAO = new MemoryUserDAO();
-        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        // One line of code to switch from memory to database
+        DAO dao = new MemoryDAO();
 
-        UserService userService = new UserService(authDAO, userDAO);
+        UserService userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
         UserHandler userHandler = new UserHandler(userService);
 
-        GameService gameService = new GameService(authDAO, gameDAO, userDAO);
+        GameService gameService = new GameService(dao.getAuthDAO(), dao.getGameDAO(), dao.getUserDAO());
         GameHandler gameHandler = new GameHandler(gameService);
 
         // Register your endpoints and handle exceptions here.

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MemoryGameDAO extends MemoryDAO implements GameDAO {
+public class MemoryGameDAO implements GameDAO {
 
     private HashMap<Integer, GameData> games = new HashMap<>();
 
