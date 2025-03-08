@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MemoryAuthDAO implements AuthDAO {
+public class MemoryAuthDAO extends MemoryDAO implements AuthDAO {
 
     HashMap<String, AuthData> signedIn = new HashMap<>();
 

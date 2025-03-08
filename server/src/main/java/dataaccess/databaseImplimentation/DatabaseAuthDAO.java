@@ -11,6 +11,8 @@ import java.util.List;
 
 public class DatabaseAuthDAO extends DatabaseDAO implements AuthDAO {
 
+    public DatabaseAuthDAO() throws ResponseException, DataAccessException {
+    }
     // connect to the database
 
     @Override
