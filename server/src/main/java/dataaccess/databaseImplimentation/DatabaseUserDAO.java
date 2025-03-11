@@ -32,7 +32,7 @@ public class DatabaseUserDAO implements UserDAO {
         try {
             return DatabaseHandler.UserDataHandler.resultSetToUserData(result);
         } catch (SQLException e) {
-            throw new DataAccessException("Could not retrieve auth data from database");
+            throw new DataAccessException("Could not retrieve user data from database");
         }
     }
 
@@ -55,7 +55,7 @@ public class DatabaseUserDAO implements UserDAO {
         try {
             return DatabaseHandler.UserDataHandler.resultSetToUserDataList(result);
         } catch (SQLException e) {
-            throw new DataAccessException("Could not retrieve auth data from database");
+            throw new DataAccessException("Could not retrieve user data from database");
         }
     }
 

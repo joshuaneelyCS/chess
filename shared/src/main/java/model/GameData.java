@@ -9,9 +9,10 @@ public class GameData {
     private String gameName;
     private ChessGame game;
 
-    public GameData(int gameID, String gameName) {
+    public GameData(int gameID, String gameName, ChessGame game) {
         this.gameID = gameID;
         this.gameName = gameName != null ? gameName : "";
+        this.game = game != null ? game : new ChessGame();
     }
 
     public int getGameID() {
@@ -28,6 +29,10 @@ public class GameData {
 
     public String getBlackUsername() {
         return blackUsername;
+    }
+
+    public ChessGame getGame() {
+        return game;
     }
 
     public void setTeam(String playerColor, String username) throws GameAlreadyTakenException, InvalidColorException {
