@@ -30,6 +30,7 @@ public class DatabaseGameDAO implements GameDAO {
 
     @Override
     public List<GameData> getAllGames() throws DataAccessException {
+
         return List.of();
     }
 
@@ -45,6 +46,7 @@ public class DatabaseGameDAO implements GameDAO {
 
     @Override
     public void deleteAllGames() throws DataAccessException {
-
+        var statement = "DELETE FROM games";
+        DatabaseManager.executeUpdate(statement);
     }
 }

@@ -40,7 +40,8 @@ public class DatabaseUserDAO implements UserDAO {
 
     @Override
     public void deleteAllUsers() throws DataAccessException {
-
+        var statement = "DELETE FROM users";
+        DatabaseManager.executeUpdate(statement);
     }
 
     @Override

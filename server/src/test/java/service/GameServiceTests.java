@@ -1,6 +1,8 @@
 package service;
 
 import dataaccess.DataAccessException;
+import dataaccess.databaseImplimentation.DatabaseDAO;
+import dataaccess.interfaces.DAO;
 import dataaccess.memoryImplimentation.MemoryAuthDAO;
 import dataaccess.memoryImplimentation.MemoryGameDAO;
 import dataaccess.memoryImplimentation.MemoryUserDAO;
@@ -17,17 +19,13 @@ public class GameServiceTests {
 
     private GameService gameService;
     private UserService userService;
-    private MemoryAuthDAO memoryAuthDAO;
-    private MemoryUserDAO memoryUserDAO;
-    private MemoryGameDAO memoryGameDAO;
+    private DAO dao;
 
     @BeforeEach
-    public void setup() {
-        memoryAuthDAO = new MemoryAuthDAO();
-        memoryGameDAO = new MemoryGameDAO();
-        memoryUserDAO = new MemoryUserDAO();
-        userService = new UserService(memoryAuthDAO, memoryUserDAO);
-        gameService = new GameService(memoryAuthDAO, memoryGameDAO, memoryUserDAO);
+    public void setup() throws DataAccessException {
+        dao = new DatabaseDAO();
+        userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
+        gameService = new GameService(dao.getAuthDAO(), dao.getGameDAO(), dao.getUserDAO());
     }
 
     // Positive
@@ -96,7 +94,7 @@ public class GameServiceTests {
         gameService.joinGame(joinRequest);
 
         // Verify that the user is set as the white player
-        GameData game = memoryGameDAO.getGame(gameID);
+        GameData game = dao.getGameDAO().getGame(gameID);
         assertEquals("player1", game.getWhiteUsername(), "White player should be set correctly");
     }
 
@@ -106,9 +104,9 @@ public class GameServiceTests {
         gameService.clearDatabase();
 
         // Verify that all data has been removed
-        assertTrue(memoryGameDAO.getAllGames().isEmpty(), "Games should be cleared");
-        assertTrue(memoryUserDAO.getAllUsers().isEmpty(), "Users should be cleared");
-        assertTrue(memoryAuthDAO.getAllAuth().isEmpty(), "Auth data should be cleared");
+        assertTrue(dao.getGameDAO().getAllGames().isEmpty(), "Games should be cleared");
+        assertTrue(dao.getUserDAO().getAllUsers().isEmpty(), "Users should be cleared");
+        assertTrue(dao.getAuthDAO().getAllAuth().isEmpty(), "Auth data should be cleared");
     }
 
     // Negative

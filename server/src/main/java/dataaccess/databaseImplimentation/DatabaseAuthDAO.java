@@ -46,7 +46,8 @@ public class DatabaseAuthDAO implements AuthDAO {
 
     @Override
     public void deleteAllAuth() throws DataAccessException {
-
+        var statement = "DELETE FROM auth";
+        DatabaseManager.executeUpdate(statement);
     }
 
     @Override
