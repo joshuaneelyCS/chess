@@ -1,6 +1,12 @@
-package dataaccess;
+package dataaccess.databaseImplimentation;
+
+import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
+import model.AuthData;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -86,6 +92,27 @@ public class DatabaseManager {
         }
     }
 
+    public static ResultSet retrieveData(String query, Object... params) throws ResponseException, DataAccessException {
+        try {
+            var conn = DatabaseManager.getConnection(); // Get DB connection
+            var ps = conn.prepareStatement(query); // Prepare the query
+
+            // Set parameters for the prepared statement
+            for (int i = 0; i < params.length; i++) {
+                var param = params[i];
+                if (param instanceof String p) ps.setString(i + 1, p);
+                else if (param instanceof Integer p) ps.setInt(i + 1, p);
+                else if (param == null) ps.setNull(i + 1, java.sql.Types.NULL);
+            }
+
+            // Execute the query and return the ResultSet
+            return ps.executeQuery();
+
+        } catch (SQLException e) {
+            throw new ResponseException("Error retrieving data: " + e.getMessage());
+        }
+    }
+
     public static int executeUpdate(String statement, Object... params) throws ResponseException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
@@ -111,4 +138,6 @@ public class DatabaseManager {
             throw new RuntimeException(e);
         }
     }
+
+
 }

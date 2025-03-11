@@ -1,8 +1,6 @@
 package dataaccess.databaseImplimentation;
 
-import chess.ChessGame;
 import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
 import dataaccess.interfaces.GameDAO;
 import model.GameData;

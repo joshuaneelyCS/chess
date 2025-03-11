@@ -1,13 +1,10 @@
 package dataaccess.databaseImplimentation;
 
 import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
 import dataaccess.interfaces.AuthDAO;
 import model.AuthData;
 
-import java.awt.image.RescaleOp;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -36,12 +33,19 @@ public class DatabaseAuthDAO implements AuthDAO {
 
     @Override
     public void removeAuth(String token) throws DataAccessException {
-
+        var statement = "DELETE FROM auth WHERE authToken = ?";
+        DatabaseManager.executeUpdate(statement, token);
     }
 
     @Override
-    public AuthData getAuth(String token) throws DataAccessException {
-        return null;
+    public AuthData getAuth(String token) throws DataAccessException{
+        var statement = "SELECT * FROM auth WHERE authToken = ?";
+        var result = DatabaseManager.retrieveData(statement, token);
+        try {
+            return DatabaseHandler.AuthDataHandler.resultSetToAuthData(result);
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not retrieve auth data from database");
+        }
     }
 
     @Override
@@ -52,7 +56,13 @@ public class DatabaseAuthDAO implements AuthDAO {
 
     @Override
     public List<AuthData> getAllAuth() throws DataAccessException {
-        return List.of();
+        var statement = "SELECT * FROM auth";
+        var result = DatabaseManager.retrieveData(statement);
+        try {
+            return DatabaseHandler.AuthDataHandler.resultSetToAuthDataList(result);
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not retrieve auth data from database");
+        }
     }
 
 

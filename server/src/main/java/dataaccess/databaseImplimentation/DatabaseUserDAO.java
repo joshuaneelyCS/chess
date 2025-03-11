@@ -1,8 +1,6 @@
 package dataaccess.databaseImplimentation;
 
-import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
 import dataaccess.interfaces.UserDAO;
 import model.UserData;
@@ -29,7 +27,13 @@ public class DatabaseUserDAO implements UserDAO {
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        return null;
+        var statement = "SELECT * FROM users WHERE username = ?";
+        var result = DatabaseManager.retrieveData(statement, username);
+        try {
+            return DatabaseHandler.UserDataHandler.resultSetToUserData(result);
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not retrieve auth data from database");
+        }
     }
 
     @Override
@@ -46,7 +50,13 @@ public class DatabaseUserDAO implements UserDAO {
 
     @Override
     public List<UserData> getAllUsers() throws DataAccessException {
-        return List.of();
+        var statement = "SELECT * FROM users";
+        var result = DatabaseManager.retrieveData(statement);
+        try {
+            return DatabaseHandler.UserDataHandler.resultSetToUserDataList(result);
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not retrieve auth data from database");
+        }
     }
 
 

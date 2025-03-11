@@ -1,17 +1,11 @@
 package dataaccess.databaseImplimentation;
 
 import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
 import dataaccess.interfaces.AuthDAO;
 import dataaccess.interfaces.DAO;
 import dataaccess.interfaces.GameDAO;
 import dataaccess.interfaces.UserDAO;
-import com.google.gson.Gson;
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
-
-import java.sql.SQLException;
 
 public class DatabaseDAO implements DAO {
 
