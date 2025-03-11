@@ -79,7 +79,7 @@ public class DatabaseHandler {
                 var game = new GameData(
                         rs.getInt("game_id"),
                         rs.getString("game_name"),
-                        convertStringToGame(rs.getString("game")));
+                        convertStringToGame(rs.getString("chess_game")));
 
                 game.setTeam("WHITE", rs.getString("white_username"));
                 game.setTeam("BLACK", rs.getString("black_username"));
@@ -97,7 +97,7 @@ public class DatabaseHandler {
                 var game = new GameData(
                         rs.getInt("game_id"),
                         rs.getString("game_name"),
-                        convertStringToGame(rs.getString("game")));
+                        convertStringToGame(rs.getString("chess_game")));
 
                 game.setTeam("WHITE", rs.getString("white_username"));
                 game.setTeam("BLACK", rs.getString("black_username"));

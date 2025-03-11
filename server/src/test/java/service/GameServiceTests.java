@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.DataAccessException;
+import dataaccess.ResponseException;
 import dataaccess.databaseImplimentation.DatabaseDAO;
 import dataaccess.interfaces.DAO;
 import dataaccess.memoryImplimentation.MemoryAuthDAO;
@@ -34,9 +35,17 @@ public class GameServiceTests {
     @DisplayName("Successfully Lists Games")
     public void listGamesSuccess() throws DataAccessException, IncorrectPasswordException {
         // Register a user and get their token
-        UserService.RegisterRequest request = new UserService.RegisterRequest("user1", "password123", "user1@email.com");
-        UserService.RegisterResult result = userService.register(request);
-        String token = result.authToken();
+        String token;
+        gameService.clearDatabase();
+        try {
+            UserService.RegisterRequest request = new UserService.RegisterRequest("user1", "password123", "user1@email.com");
+            UserService.RegisterResult result = userService.register(request);
+            token = result.authToken();
+        } catch (ResponseException e) {
+            UserService.LoginRequest loginRequest = new UserService.LoginRequest("user1", "password123");
+            UserService.LoginResult loginResult = userService.login(loginRequest);
+            token = loginResult.authToken();
+        }
 
         // Check that initially there are no games
         List<GameData> games = gameService.listGames(token);

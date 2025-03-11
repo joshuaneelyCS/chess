@@ -1,4 +1,5 @@
 package service;
+import chess.ChessGame;
 import dataaccess.interfaces.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.interfaces.GameDAO;
@@ -40,7 +41,7 @@ public class GameService {
             };
             return gameDAO.getAllGames(); // Return the list of games if authenticated
         } catch (DataAccessException e) {
-            throw new DataAccessException("Error: Unauthorized access - Invalid token");
+            throw new DataAccessException("Error: Could not get games from database");
         }
     }
 
@@ -48,7 +49,7 @@ public class GameService {
         try {
             authDAO.getAuth(req.token);
             int id = createID();
-            gameDAO.createGame(new GameData(id, req.gameName));
+            gameDAO.createGame(new GameData(id, req.gameName, new ChessGame()));
             return new createGameResult(id);
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: Unauthorized access - Invalid token");

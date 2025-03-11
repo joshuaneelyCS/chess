@@ -6,6 +6,7 @@ import dataaccess.interfaces.GameDAO;
 import model.GameData;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseGameDAO implements GameDAO {
