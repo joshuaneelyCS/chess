@@ -27,6 +27,7 @@ public class GameServiceTests {
         dao = new DatabaseDAO();
         userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
         gameService = new GameService(dao.getAuthDAO(), dao.getGameDAO(), dao.getUserDAO());
+        gameService.clearDatabase();
     }
 
     // Positive
@@ -36,16 +37,10 @@ public class GameServiceTests {
     public void listGamesSuccess() throws DataAccessException, IncorrectPasswordException {
         // Register a user and get their token
         String token;
-        gameService.clearDatabase();
-        try {
-            UserService.RegisterRequest request = new UserService.RegisterRequest("user1", "password123", "user1@email.com");
-            UserService.RegisterResult result = userService.register(request);
-            token = result.authToken();
-        } catch (ResponseException e) {
-            UserService.LoginRequest loginRequest = new UserService.LoginRequest("user1", "password123");
-            UserService.LoginResult loginResult = userService.login(loginRequest);
-            token = loginResult.authToken();
-        }
+
+        UserService.RegisterRequest request = new UserService.RegisterRequest("user1", "password123", "user1@email.com");
+        UserService.RegisterResult result = userService.register(request);
+        token = result.authToken();
 
         // Check that initially there are no games
         List<GameData> games = gameService.listGames(token);
@@ -67,6 +62,7 @@ public class GameServiceTests {
     @Test
     @DisplayName("Create Game Successfully")
     public void createGameSuccess() throws DataAccessException, IncorrectPasswordException {
+
         // Register a user
         UserService.RegisterRequest request = new UserService.RegisterRequest("user2", "password456", "user2@email.com");
         UserService.RegisterResult result = userService.register(request);
