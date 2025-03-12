@@ -1,4 +1,4 @@
-package dataaccess.memoryImplimentation;
+package dataaccess.memoryImplementation;
 
 import dataaccess.interfaces.DAO;
 import dataaccess.interfaces.AuthDAO;

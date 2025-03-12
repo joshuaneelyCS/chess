@@ -1,4 +1,4 @@
-package dataaccess.memoryImplimentation;
+package dataaccess.memoryImplementation;
 import dataaccess.DataAccessException;
 import dataaccess.interfaces.UserDAO;
 import model.UserData;
