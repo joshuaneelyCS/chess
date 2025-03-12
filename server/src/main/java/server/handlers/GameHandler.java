@@ -85,7 +85,7 @@ public class GameHandler {
 
                 String token = req.headers("Authorization");
 
-                GameService.CreateGameRequest createGameRequest = gson.fromJson(req.body(), GameService.createGameRequest.class);
+                GameService.CreateGameRequest createGameRequest = gson.fromJson(req.body(), GameService.CreateGameRequest.class);
                 createGameRequest = new GameService.CreateGameRequest(token, createGameRequest.gameName());
                 GameService.CreateGameResult result = gameService.createGame(createGameRequest);
 
@@ -115,9 +115,9 @@ public class GameHandler {
                 String token = req.headers("Authorization");
 
                 // Parse JSON request body safely
-                GameService.joinGameRequest requestBody;
+                GameService.JoinGameRequest requestBody;
                 try {
-                    requestBody = gson.fromJson(req.body(), GameService.joinGameRequest.class);
+                    requestBody = gson.fromJson(req.body(), GameService.JoinGameRequest.class);
 
                     // Validate required fields
                     if (requestBody == null || requestBody.playerColor() == null || requestBody.gameID() == 0) {
@@ -129,8 +129,8 @@ public class GameHandler {
                     return gson.toJson(Map.of("message", "Error: Bad request - Missing or invalid fields"));
                 }
 
-                GameService.joinGameRequest joinGameRequest =
-                        new GameService.joinGameRequest(token, requestBody.playerColor(), requestBody.gameID());
+                GameService.JoinGameRequest joinGameRequest =
+                        new GameService.JoinGameRequest(token, requestBody.playerColor(), requestBody.gameID());
 
                 gameService.joinGame(joinGameRequest);
 
