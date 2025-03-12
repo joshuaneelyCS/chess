@@ -1,4 +1,4 @@
-package dataaccess.databaseImplimentation;
+package dataaccess.databaseImplementation;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
@@ -8,16 +8,16 @@ import dataaccess.interfaces.DAO;
 import dataaccess.interfaces.GameDAO;
 import dataaccess.interfaces.UserDAO;
 
-public class databaseDAO implements DAO {
+public class DatabaseDAO implements DAO {
 
     private AuthDAO authDAO;
     private UserDAO userDAO;
     private GameDAO gameDAO;
 
     // create the database
-    public databaseDAO() throws ResponseException, DataAccessException {
+    public DatabaseDAO() throws ResponseException, DataAccessException {
         createDatabase();
-        authDAO = new databaseauthdao();
+        authDAO = new DatabaseAuthDAO();
         userDAO = new DatabaseUserDAO();
         gameDAO = new DatabaseGameDAO();
     }

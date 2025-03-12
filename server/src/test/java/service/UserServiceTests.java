@@ -1,7 +1,7 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.databaseImplimentation.databaseDAO;
+import dataaccess.databaseImplementation.DatabaseDAO;
 import dataaccess.interfaces.DAO;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +14,7 @@ public class UserServiceTests {
 
     @BeforeEach
     public void setup() throws DataAccessException {
-        dao = new databaseDAO();
+        dao = new DatabaseDAO();
         userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
         gameService = new GameService(dao.getAuthDAO(), dao.getGameDAO(), dao.getUserDAO());
         gameService.clearDatabase();

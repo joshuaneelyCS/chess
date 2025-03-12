@@ -1,7 +1,7 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.databaseImplimentation.databaseDAO;
+import dataaccess.databaseImplementation.DatabaseDAO;
 import dataaccess.interfaces.DAO;
 import model.GameData;
 import model.GameAlreadyTakenException;
@@ -20,7 +20,7 @@ public class GameServiceTests {
 
     @BeforeEach
     public void setup() throws DataAccessException {
-        dao = new databaseDAO();
+        dao = new DatabaseDAO();
         userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
         gameService = new GameService(dao.getAuthDAO(), dao.getGameDAO(), dao.getUserDAO());
         gameService.clearDatabase();

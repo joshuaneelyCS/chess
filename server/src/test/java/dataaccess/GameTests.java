@@ -1,7 +1,6 @@
 package dataaccess;
 
-import dataaccess.DataAccessException;
-import dataaccess.databaseImplimentation.DatabaseGameDAO;
+import dataaccess.databaseImplementation.DatabaseGameDAO;
 import model.GameAlreadyTakenException;
 import model.GameData;
 import model.InvalidColorException;

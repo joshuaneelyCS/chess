@@ -1,4 +1,4 @@
-package dataaccess.databaseImplimentation;
+package dataaccess.databaseImplementation;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
@@ -8,7 +8,6 @@ import model.GameAlreadyTakenException;
 import model.GameData;
 import model.InvalidColorException;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.List;
 

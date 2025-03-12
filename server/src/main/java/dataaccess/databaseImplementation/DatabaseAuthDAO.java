@@ -1,4 +1,4 @@
-package dataaccess.databaseImplimentation;
+package dataaccess.databaseImplementation;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
@@ -9,7 +9,7 @@ import model.AuthData;
 import java.sql.SQLException;
 import java.util.List;
 
-public class databaseauthdao implements AuthDAO {
+public class DatabaseAuthDAO implements AuthDAO {
 
     private final String[] createStatements = {
             """
@@ -21,7 +21,7 @@ public class databaseauthdao implements AuthDAO {
             """
     };
 
-    public databaseauthdao() throws ResponseException, DataAccessException {
+    public DatabaseAuthDAO() throws ResponseException, DataAccessException {
         DatabaseManager.createTables(createStatements);
     }
     // connect to the database

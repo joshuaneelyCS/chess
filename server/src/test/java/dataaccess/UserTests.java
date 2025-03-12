@@ -1,7 +1,6 @@
 package dataaccess;
 
-import dataaccess.DataAccessException;
-import dataaccess.databaseImplimentation.DatabaseUserDAO;
+import dataaccess.databaseImplementation.DatabaseUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.*;
 

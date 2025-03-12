@@ -1,7 +1,7 @@
 package server;
 
 import dataaccess.DataAccessException;
-import dataaccess.databaseImplimentation.databaseDAO;
+import dataaccess.databaseImplementation.DatabaseDAO;
 import dataaccess.interfaces.DAO;
 import dataaccess.memoryImplimentation.MemoryDAO;
 import server.handlers.GameHandler;
@@ -20,7 +20,7 @@ public class Server {
 
         // One line of code to switch from memory to database
         try {
-            dao = new databaseDAO();
+            dao = new DatabaseDAO();
         } catch (DataAccessException e) {
             dao = new MemoryDAO();
         }
