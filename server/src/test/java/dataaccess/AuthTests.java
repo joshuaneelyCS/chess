@@ -1,6 +1,6 @@
 package dataaccess;
 
-import dataaccess.databaseImplimentation.databaseAuthDAO;
+import dataaccess.databaseImplimentation.databaseauthdao;
 import model.AuthData;
 import org.junit.jupiter.api.*;
 
@@ -12,11 +12,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthTests {
 
-    private databaseAuthDAO authDAO;
+    private databaseauthdao authDAO;
 
     @BeforeAll
     public void setUp() throws DataAccessException {
-        authDAO = new databaseAuthDAO();
+        authDAO = new databaseauthdao();
         authDAO.deleteAllAuth(); // Clear auth table before tests
     }
 

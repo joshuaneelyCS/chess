@@ -17,7 +17,7 @@ public class databaseDAO implements DAO {
     // create the database
     public databaseDAO() throws ResponseException, DataAccessException {
         createDatabase();
-        authDAO = new databaseAuthDAO();
+        authDAO = new databaseauthdao();
         userDAO = new DatabaseUserDAO();
         gameDAO = new DatabaseGameDAO();
     }

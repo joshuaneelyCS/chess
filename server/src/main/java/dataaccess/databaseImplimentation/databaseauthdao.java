@@ -9,7 +9,7 @@ import model.AuthData;
 import java.sql.SQLException;
 import java.util.List;
 
-public class databaseAuthDAO implements AuthDAO {
+public class databaseauthdao implements AuthDAO {
 
     private final String[] createStatements = {
             """
@@ -21,7 +21,7 @@ public class databaseAuthDAO implements AuthDAO {
             """
     };
 
-    public databaseAuthDAO() throws ResponseException, DataAccessException {
+    public databaseauthdao() throws ResponseException, DataAccessException {
         DatabaseManager.createTables(createStatements);
     }
     // connect to the database
