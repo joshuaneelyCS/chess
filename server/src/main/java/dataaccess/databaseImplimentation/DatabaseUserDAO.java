@@ -45,7 +45,6 @@ public class DatabaseUserDAO implements UserDAO {
         } catch (ResponseException e) {
             throw new DataAccessException("Could not create user data");
         }
-
     }
 
     @Override
