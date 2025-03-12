@@ -43,8 +43,8 @@ public class GameServiceTests {
         assertTrue(games.isEmpty(), "Game list should be empty initially");
 
         // Create two games
-        GameService.createGameRequest request1 = new GameService.createGameRequest(token, "game1");
-        GameService.createGameRequest request2 = new GameService.createGameRequest(token, "game2");
+        GameService.CreateGameRequest request1 = new GameService.CreateGameRequest(token, "game1");
+        GameService.CreateGameRequest request2 = new GameService.CreateGameRequest(token, "game2");
 
         gameService.createGame(request1);
         gameService.createGame(request2);
@@ -65,8 +65,8 @@ public class GameServiceTests {
         String token = result.authToken();
 
         // Create a game
-        GameService.createGameRequest createRequest = new GameService.createGameRequest(token, "MyChessGame");
-        GameService.createGameResult gameResult = gameService.createGame(createRequest);
+        GameService.CreateGameRequest createRequest = new GameService.CreateGameRequest(token, "MyChessGame");
+        GameService.CreateGameResult gameResult = gameService.createGame(createRequest);
 
         assertNotNull(gameResult, "Game creation result should not be null");
         assertTrue(gameResult.gameID() > 0, "Game ID should be a positive integer");
@@ -86,12 +86,12 @@ public class GameServiceTests {
         String token = result.authToken();
 
         // Create a game
-        GameService.createGameRequest createRequest = new GameService.createGameRequest(token, "JoinableGame");
-        GameService.createGameResult gameResult = gameService.createGame(createRequest);
+        GameService.CreateGameRequest createRequest = new GameService.CreateGameRequest(token, "JoinableGame");
+        GameService.CreateGameResult gameResult = gameService.createGame(createRequest);
         int gameID = gameResult.gameID();
 
         // Join as white player
-        GameService.joinGameRequest joinRequest = new GameService.joinGameRequest(token, "WHITE", gameID);
+        GameService.JoinGameRequest joinRequest = new GameService.JoinGameRequest(token, "WHITE", gameID);
         gameService.joinGame(joinRequest);
 
         // Verify that the user is set as the white player
@@ -123,7 +123,7 @@ public class GameServiceTests {
     @Test
     @DisplayName("Create Game with Invalid Token (Fail)")
     public void createGameInvalidToken() {
-        GameService.createGameRequest createRequest = new GameService.createGameRequest("invalid-token", "InvalidGame");
+        GameService.CreateGameRequest createRequest = new GameService.CreateGameRequest("invalid-token", "InvalidGame");
 
         assertThrows(DataAccessException.class, () -> {
             gameService.createGame(createRequest);
@@ -133,7 +133,7 @@ public class GameServiceTests {
     @Test
     @DisplayName("Join Game with Invalid Token (Fail)")
     public void joinGameInvalidToken() {
-        GameService.joinGameRequest joinRequest = new GameService.joinGameRequest("invalid-token", "white", 12345);
+        GameService.JoinGameRequest joinRequest = new GameService.JoinGameRequest("invalid-token", "white", 12345);
 
         assertThrows(DataAccessException.class, () -> {
             gameService.joinGame(joinRequest);
@@ -149,7 +149,7 @@ public class GameServiceTests {
         String token = result.authToken();
 
         // Try to join a game that doesn't exist
-        GameService.joinGameRequest joinRequest = new GameService.joinGameRequest(token, "BLACK", 99999);
+        GameService.JoinGameRequest joinRequest = new GameService.JoinGameRequest(token, "BLACK", 99999);
 
         assertThrows(DataAccessException.class, () -> {
             gameService.joinGame(joinRequest);

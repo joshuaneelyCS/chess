@@ -22,11 +22,11 @@ public class GameService {
         return random.nextInt(1_000_000); // Generates a random number between 0 and 999,999
     }
 
-    public record createGameRequest(String token, String gameName) {}
+    public record CreateGameRequest(String token, String gameName) {}
 
-    public record createGameResult(int gameID) {}
+    public record CreateGameResult(int gameID) {}
 
-    public record joinGameRequest(String token, String playerColor, int gameID) {};
+    public record JoinGameRequest(String token, String playerColor, int gameID) {};
 
     public GameService(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
         this.gameDAO = gameDAO;
@@ -45,18 +45,18 @@ public class GameService {
         }
     }
 
-    public createGameResult createGame(createGameRequest req) throws DataAccessException {
+    public CreateGameResult createGame(CreateGameRequest req) throws DataAccessException {
         try {
             authDAO.getAuth(req.token);
             int id = createID();
             gameDAO.createGame(new GameData(id, req.gameName, new ChessGame()));
-            return new createGameResult(id);
+            return new CreateGameResult(id);
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: Unauthorized access - Invalid token");
         }
     }
 
-    public void joinGame(joinGameRequest req) throws DataAccessException, GameAlreadyTakenException, InvalidColorException {
+    public void joinGame(JoinGameRequest req) throws DataAccessException, GameAlreadyTakenException, InvalidColorException {
 
         String username = authDAO.getAuth(req.token).getUsername();
         gameDAO.joinGame(req.gameID, req.playerColor, username);

@@ -85,9 +85,9 @@ public class GameHandler {
 
                 String token = req.headers("Authorization");
 
-                GameService.createGameRequest createGameRequest = gson.fromJson(req.body(), GameService.createGameRequest.class);
-                createGameRequest = new GameService.createGameRequest(token, createGameRequest.gameName());
-                GameService.createGameResult result = gameService.createGame(createGameRequest);
+                GameService.CreateGameRequest createGameRequest = gson.fromJson(req.body(), GameService.createGameRequest.class);
+                createGameRequest = new GameService.CreateGameRequest(token, createGameRequest.gameName());
+                GameService.CreateGameResult result = gameService.createGame(createGameRequest);
 
                 res.status(200);
                 return gson.toJson(result);
