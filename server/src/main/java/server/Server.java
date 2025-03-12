@@ -1,9 +1,9 @@
 package server;
 
 import dataaccess.DataAccessException;
-import dataaccess.databaseImplementation.DatabaseDAO;
+import dataaccess.databaseimplementation.DatabaseDAO;
 import dataaccess.interfaces.DAO;
-import dataaccess.memoryImplementation.MemoryDAO;
+import dataaccess.memoryimplementation.MemoryDAO;
 import server.handlers.GameHandler;
 import server.handlers.UserHandler;
 import service.GameService;

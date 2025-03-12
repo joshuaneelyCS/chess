@@ -1,4 +1,4 @@
-package dataaccess.databaseImplementation;
+package dataaccess.databaseimplementation;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;

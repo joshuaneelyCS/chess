@@ -1,7 +1,7 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.databaseImplementation.DatabaseDAO;
+import dataaccess.databaseimplementation.DatabaseDAO;
 import dataaccess.interfaces.DAO;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
