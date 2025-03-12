@@ -53,6 +53,19 @@ public class DatabaseGameDAO implements GameDAO {
     }
 
     @Override
+    public void joinGame(int id, String playerColor, String username) throws DataAccessException {
+        if (playerColor.equals("WHITE")) {
+            playerColor = "white_username";
+        } else if (playerColor.equals("BLACK")) {
+            playerColor = "black_username";
+        } else {
+            throw new DataAccessException("Invalid player color");
+        }
+        var statement = "UPDATE games SET " + playerColor + " = ? WHERE game_id = ?";
+        DatabaseManager.executeUpdate(statement, username, id);
+    }
+
+    @Override
     public GameData getGame(int id) throws DataAccessException {
         var statement = "SELECT * FROM games WHERE game_id = ?";
         var result = DatabaseManager.retrieveData(statement, id);

@@ -59,9 +59,8 @@ public class GameService {
     public void joinGame(joinGameRequest req) throws DataAccessException, GameAlreadyTakenException, InvalidColorException {
 
         String username = authDAO.getAuth(req.token).getUsername();
-        GameData game = gameDAO.getGame(req.gameID);
+        gameDAO.joinGame(req.gameID, req.playerColor, username);
 
-        game.setTeam(req.playerColor, username);
     }
 
     public void clearDatabase() throws DataAccessException {

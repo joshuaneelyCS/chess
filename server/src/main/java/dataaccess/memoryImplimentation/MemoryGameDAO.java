@@ -32,6 +32,12 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
+    public void joinGame(int id, String playerColor, String username) throws DataAccessException {
+        GameData game = getGame(id);
+        game.setTeam(playerColor, username);
+    }
+
+    @Override
     public void deleteAllGames() {
         games.clear();
     }
