@@ -1,12 +1,8 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.ResponseException;
-import dataaccess.databaseImplimentation.DatabaseDAO;
+import dataaccess.databaseImplimentation.databaseDAO;
 import dataaccess.interfaces.DAO;
-import dataaccess.memoryImplimentation.MemoryAuthDAO;
-import dataaccess.memoryImplimentation.MemoryGameDAO;
-import dataaccess.memoryImplimentation.MemoryUserDAO;
 import model.GameData;
 import model.GameAlreadyTakenException;
 import model.InvalidColorException;
@@ -24,7 +20,7 @@ public class GameServiceTests {
 
     @BeforeEach
     public void setup() throws DataAccessException {
-        dao = new DatabaseDAO();
+        dao = new databaseDAO();
         userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
         gameService = new GameService(dao.getAuthDAO(), dao.getGameDAO(), dao.getUserDAO());
         gameService.clearDatabase();
@@ -153,7 +149,7 @@ public class GameServiceTests {
         String token = result.authToken();
 
         // Try to join a game that doesn't exist
-        GameService.joinGameRequest joinRequest = new GameService.joinGameRequest(token, "black", 99999);
+        GameService.joinGameRequest joinRequest = new GameService.joinGameRequest(token, "BLACK", 99999);
 
         assertThrows(DataAccessException.class, () -> {
             gameService.joinGame(joinRequest);

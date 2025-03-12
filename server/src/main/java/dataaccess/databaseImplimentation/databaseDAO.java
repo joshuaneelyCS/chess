@@ -8,14 +8,14 @@ import dataaccess.interfaces.DAO;
 import dataaccess.interfaces.GameDAO;
 import dataaccess.interfaces.UserDAO;
 
-public class DatabaseDAO implements DAO {
+public class databaseDAO implements DAO {
 
     private AuthDAO authDAO;
     private UserDAO userDAO;
     private GameDAO gameDAO;
 
     // create the database
-    public DatabaseDAO() throws ResponseException, DataAccessException {
+    public databaseDAO() throws ResponseException, DataAccessException {
         createDatabase();
         authDAO = new databaseAuthDAO();
         userDAO = new DatabaseUserDAO();

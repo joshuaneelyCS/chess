@@ -8,6 +8,7 @@ import model.GameAlreadyTakenException;
 import model.GameData;
 import model.InvalidColorException;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -67,11 +68,13 @@ public class DatabaseGameDAO implements GameDAO {
         String checkStatement = "SELECT " + playerColor + " FROM games WHERE game_id = ?";
 
         try (var resultSet = DatabaseManager.retrieveData(checkStatement, id)) {
-            if (resultSet.next()) {  // Move cursor to the first row
+            if (resultSet.next()) {
                 String existingUser = resultSet.getString(playerColor);
                 if (existingUser != null && !existingUser.isEmpty()) {
                     throw new GameAlreadyTakenException("The selected color is already taken by another player.");
                 }
+            } else {
+                throw new DataAccessException("Game does not exist");
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error accessing game data");
