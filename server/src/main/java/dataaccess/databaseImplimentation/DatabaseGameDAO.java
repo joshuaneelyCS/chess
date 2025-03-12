@@ -4,7 +4,9 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
 import dataaccess.interfaces.GameDAO;
+import model.GameAlreadyTakenException;
 import model.GameData;
+import model.InvalidColorException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -59,8 +61,22 @@ public class DatabaseGameDAO implements GameDAO {
         } else if (playerColor.equals("BLACK")) {
             playerColor = "black_username";
         } else {
-            throw new DataAccessException("Invalid player color");
+            throw new InvalidColorException("Invalid player color");
         }
+
+        String checkStatement = "SELECT " + playerColor + " FROM games WHERE game_id = ?";
+
+        try (var resultSet = DatabaseManager.retrieveData(checkStatement, id)) {
+            if (resultSet.next()) {  // Move cursor to the first row
+                String existingUser = resultSet.getString(playerColor);
+                if (existingUser != null && !existingUser.isEmpty()) {
+                    throw new GameAlreadyTakenException("The selected color is already taken by another player.");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error accessing game data");
+        }
+
         var statement = "UPDATE games SET " + playerColor + " = ? WHERE game_id = ?";
         DatabaseManager.executeUpdate(statement, username, id);
     }
