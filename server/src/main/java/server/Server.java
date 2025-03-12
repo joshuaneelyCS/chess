@@ -18,12 +18,18 @@ import spark.*;
 
 public class Server {
 
-    public int run(int desiredPort) throws DataAccessException {
+    private DAO dao;
+
+    public int run(int desiredPort) {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
 
         // One line of code to switch from memory to database
-        DAO dao = new DatabaseDAO();
+        try {
+            dao = new DatabaseDAO();
+        } catch (DataAccessException e) {
+            dao = new MemoryDAO();
+        }
 
         UserService userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
         UserHandler userHandler = new UserHandler(userService);
