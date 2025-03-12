@@ -1,6 +1,7 @@
 package dataaccess.databaseImplimentation;
 
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
 import dataaccess.interfaces.AuthDAO;
 import dataaccess.interfaces.DAO;

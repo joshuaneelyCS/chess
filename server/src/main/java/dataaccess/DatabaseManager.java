@@ -1,12 +1,6 @@
-package dataaccess.databaseImplimentation;
-
-import dataaccess.DataAccessException;
-import dataaccess.ResponseException;
-import model.AuthData;
+package dataaccess;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;

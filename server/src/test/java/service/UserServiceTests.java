@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTests {
 
+    private GameService gameService;
     private UserService userService;
     private DAO dao;
 
@@ -19,6 +20,8 @@ public class UserServiceTests {
     public void setup() throws DataAccessException {
         dao = new DatabaseDAO();
         userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
+        gameService = new GameService(dao.getAuthDAO(), dao.getGameDAO(), dao.getUserDAO());
+        gameService.clearDatabase();
     }
 
     //  Positive Tests

@@ -41,7 +41,6 @@ public class DatabaseTests {
         server.stop();
     }
 
-
     @Test
     @DisplayName("Persistence Test")
     @Order(1)

@@ -23,7 +23,7 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // One line of code to switch from memory to database
-        DAO dao = new MemoryDAO();
+        DAO dao = new DatabaseDAO();
 
         UserService userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
         UserHandler userHandler = new UserHandler(userService);

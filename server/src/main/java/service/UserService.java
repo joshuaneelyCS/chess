@@ -6,6 +6,7 @@ import dataaccess.interfaces.AuthDAO;
 import dataaccess.interfaces.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import spark.Response;
 
 import java.util.UUID;
@@ -38,9 +39,9 @@ public class UserService {
         if (request.username == null || request.password == null) {
             throw new IncorrectPasswordException("");
         }
-
+        String hashedPassword = BCrypt.hashpw(request.password, BCrypt.gensalt());
         // user is successfully created
-        userDAO.createUser(new UserData(request.username, request.password, request.email));
+        userDAO.createUser(new UserData(request.username, hashedPassword, request.email));
         // user token is stored in auth data
         String token = generateToken();
         AuthData authData = new AuthData(token, request.username);
@@ -56,9 +57,8 @@ public class UserService {
         if (user == null) {
             throw new UserNotFoundException("Error: User not found");
         }
-        System.out.println(user.getPassword());
-        System.out.println(request.password);
-        if (!user.getPassword().equals(request.password)) {
+
+        if (!BCrypt.checkpw(request.password, user.getPassword())) {
             System.out.println("Here");
             throw new IncorrectPasswordException("Error: Passwords do not match");
         }
