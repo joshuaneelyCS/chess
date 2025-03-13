@@ -88,20 +88,20 @@ public class ChessBoard implements Cloneable {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        _resetBoard();
+        privresetBoard();
     }
 
-    private void _resetBoard() {
-        _clearBoard();
-        _placeRooks();
-        _placeKnights();
-        _placeBishops();
-        _placeQueens();
-        _placeKings();
-        _placePawns();
+    private void privresetBoard() {
+        privclearBoard();
+        privplaceRooks();
+        privplaceKnights();
+        privplaceBishops();
+        privplaceQueens();
+        privplaceKings();
+        privplacePawns();
     }
 
-    private void _clearBoard() {
+    private void privclearBoard() {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 board[i][j] = null;
@@ -109,38 +109,38 @@ public class ChessBoard implements Cloneable {
         }
     }
 
-    private void _placeRooks() {
+    private void privplaceRooks() {
         board[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
         board[0][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
         board[7][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
         board[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
     }
 
-    private void _placeKnights() {
+    private void privplaceKnights() {
         board[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
         board[0][6] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
         board[7][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
         board[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
     }
 
-    private void _placeBishops() {
+    private void privplaceBishops() {
         board[0][2] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
         board[0][5] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
         board[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
         board[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
     }
 
-    private void _placeQueens() {
+    private void privplaceQueens() {
         board[0][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
         board[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
     }
 
-    private void _placeKings() {
+    private void privplaceKings() {
         board[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
         board[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
     }
 
-    private void _placePawns() {
+    private void privplacePawns() {
         for (int i = 0; i < 8; i++) {
             board[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         }
