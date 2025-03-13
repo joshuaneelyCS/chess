@@ -111,7 +111,6 @@ public class ChessPiece implements Cloneable {
         listOfMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.BISHOP));
         listOfMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.KNIGHT));
         listOfMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.ROOK));
-
         return listOfMoves;
     }
 
@@ -184,41 +183,41 @@ public class ChessPiece implements Cloneable {
 
     private ArrayList<ChessMove> getPawnMoves(ChessBoard board, ChessPosition initPosition) {
         var listOfMoves = new ArrayList<ChessMove>();
-        var currPosition = initPosition;
-        var direction = 1;
-        var startingRow = 2;
+        int direction = (pieceColor == ChessGame.TeamColor.BLACK) ? -1 : 1;
+        int startingRow = (pieceColor == ChessGame.TeamColor.BLACK) ? 7 : 2;
+        int promotionRow = (pieceColor == ChessGame.TeamColor.BLACK) ? 1 : 8;
 
-        if (pieceColor == ChessGame.TeamColor.BLACK) {
-            direction = -1;
-            startingRow = 7;
-        }
-
-        if (currPosition.getRow() == startingRow) {
-            // if it's in the starting position, allow the double space forward
-            currPosition = new ChessPosition(currPosition.getRow() + (direction), currPosition.getColumn());
-            // if the square in front is not blocked
-            if (board.getPiece(currPosition) == null) {
-                currPosition = new ChessPosition(currPosition.getRow() + (direction), currPosition.getColumn());
-                // if the next square is not blocked
-                if (board.getPiece(currPosition) == null) {
-                    listOfMoves.add(new ChessMove(initPosition, currPosition, null));
-                }
+        // Move one square forward if not occupied
+        ChessPosition oneStep = new ChessPosition(initPosition.getRow() + direction, initPosition.getColumn());
+        if (!outOfBounds(oneStep) && board.getPiece(oneStep) == null) {
+            if (oneStep.getRow() == promotionRow) {
+                // If reaching the last rank, add all promotion options
+                addPromotions(initPosition, oneStep, listOfMoves);
+            } else {
+                listOfMoves.add(new ChessMove(initPosition, oneStep, null));
             }
 
-            currPosition = initPosition;
+            // Move two squares forward from the starting position if the path is clear
+            ChessPosition twoSteps = new ChessPosition(initPosition.getRow() + 2 * direction, initPosition.getColumn());
+            if (initPosition.getRow() == startingRow && board.getPiece(twoSteps) == null && board.getPiece(oneStep) == null) {
+                listOfMoves.add(new ChessMove(initPosition, twoSteps, null));
+            }
         }
-        // Move one space forward
-        currPosition = new ChessPosition(currPosition.getRow() + direction, currPosition.getColumn());
-        listOfMoves = getChessMoves(board, currPosition, listOfMoves, initPosition);
 
-        // Attack spaces on the diagonal
-        currPosition = initPosition;
-        currPosition = new ChessPosition(currPosition.getRow() + direction, currPosition.getColumn() + 1);
-        listOfMoves = getChessMoves(board, initPosition, listOfMoves, currPosition);
+        // Diagonal captures (only if capturing an opponent piece)
+        for (int dx : new int[]{-1, 1}) {
+            ChessPosition diagonal = new ChessPosition(initPosition.getRow() + direction, initPosition.getColumn() + dx);
+            if (!outOfBounds(diagonal) && board.getPiece(diagonal) != null &&
+                    board.getPiece(diagonal).getTeamColor() != pieceColor) {
 
-        currPosition = initPosition;
-        currPosition = new ChessPosition(currPosition.getRow() + direction, currPosition.getColumn() - 1);
-        listOfMoves = getChessMoves(board, initPosition, listOfMoves, currPosition);
+                if (diagonal.getRow() == promotionRow) {
+                    // If capturing on the last rank, add promotion options
+                    addPromotions(initPosition, diagonal, listOfMoves);
+                } else {
+                    listOfMoves.add(new ChessMove(initPosition, diagonal, null));
+                }
+            }
+        }
 
         return listOfMoves;
     }

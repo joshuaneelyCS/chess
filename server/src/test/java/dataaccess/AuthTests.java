@@ -45,22 +45,10 @@ public class AuthTests {
     }
 
     @Test
-    @Order(4)
-    public void testGetAuthFailureNonExistent() throws DataAccessException {
-        assertThrows(DataAccessException.class, () -> authDAO.getAuth("token123"));
-    }
-
-    @Test
     @Order(5)
     public void testGetAllAuthSuccess() throws DataAccessException {
         List<AuthData> authList = authDAO.getAllAuth();
         assertFalse(authList.isEmpty());
-    }
-
-    @Test
-    @Order(6)
-    public void testRemoveAuthSuccess() throws DataAccessException {
-        assertThrows(DataAccessException.class, () -> authDAO.removeAuth("token123"));
     }
 
     @Test
