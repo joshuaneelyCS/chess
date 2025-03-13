@@ -164,7 +164,7 @@ public class ChessPiece implements Cloneable {
     private ArrayList<ChessMove> getChessMoves2(ChessBoard board, ChessPosition initPosition, ArrayList<ChessMove> listOfMoves, int[][] directions) {
         var currPosition = initPosition;
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < directions.length; i++) {
             while (true) {
                 // set the current position to the next possible position
                 currPosition = new ChessPosition(currPosition.getRow() + directions[i][0], currPosition.getColumn() + directions[i][1]);
@@ -272,31 +272,7 @@ public class ChessPiece implements Cloneable {
     private ArrayList<ChessMove> getQueenMoves(ChessBoard board, ChessPosition initPosition) {
         var listOfMoves = new ArrayList<ChessMove>();
         var directions = new int[][]{{1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}};
-        var currPosition = initPosition;
-
-        for (int i = 0; i < directions.length; i++) {
-            while (true) {
-                // set the current position to the next possible position
-                currPosition = new ChessPosition(currPosition.getRow() + directions[i][0], currPosition.getColumn() + directions[i][1]);
-
-                // if the position is out of bounds, break the loop
-                if (outOfBounds(currPosition)) {
-                    break;
-                }
-                if (board.getPiece(currPosition) != null) {
-                    // if piece can be taken
-                    if (board.getPiece(currPosition).getTeamColor() != pieceColor) {
-                        listOfMoves.add(new ChessMove(initPosition, currPosition, null));
-                    }
-                    break;
-                }
-
-                listOfMoves.add(new ChessMove(initPosition, currPosition, null));
-            }
-            currPosition = initPosition;
-        }
-
-        return listOfMoves;
+        return getChessMoves2(board, initPosition, listOfMoves, directions);
     }
 
     private ArrayList<ChessMove> getRookMoves(ChessBoard board, ChessPosition initPosition) {
