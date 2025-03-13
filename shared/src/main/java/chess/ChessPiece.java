@@ -14,7 +14,6 @@ public class ChessPiece implements Cloneable {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
-    private boolean canCastle;
 
     @Override
     protected ChessPiece clone() {
@@ -50,10 +49,6 @@ public class ChessPiece implements Cloneable {
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
-
-        if (type == ChessPiece.PieceType.KING || type == ChessPiece.PieceType.ROOK) {
-            canCastle = true;
-        }
     }
 
     /**
@@ -66,14 +61,6 @@ public class ChessPiece implements Cloneable {
         KNIGHT,
         ROOK,
         PAWN
-    }
-
-    public void setCastle(boolean canCastle) {
-        this.canCastle = canCastle;
-    }
-
-    public boolean canCastle() {
-        return canCastle;
     }
 
     /**

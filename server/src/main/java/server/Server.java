@@ -53,10 +53,6 @@ public class Server {
 
     }
 
-    private static Object handleHello(Request req, Response res) {
-        return "Hello BYU!";
-    }
-
     public void stop() {
         Spark.stop();
         Spark.awaitStop();

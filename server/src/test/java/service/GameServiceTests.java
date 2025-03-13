@@ -14,16 +14,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTests {
 
-    private GameService gameService;
-    private UserService userService;
-    private DAO dao;
+    private GameService testgameService;
+    private UserService testuserService;
+    private DAO testdao;
 
     @BeforeEach
     public void setup() throws DataAccessException {
-        dao = new DatabaseDAO();
-        userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
-        gameService = new GameService(dao.getAuthDAO(), dao.getGameDAO(), dao.getUserDAO());
-        gameService.clearDatabase();
+        testdao = new DatabaseDAO();
+        testuserService = new UserService(testdao.getAuthDAO(), testdao.getUserDAO());
+        testgameService = new GameService(testdao.getAuthDAO(), testdao.getGameDAO(), testdao.getUserDAO());
+        testgameService.clearDatabase();
     }
 
     // Positive
@@ -35,22 +35,22 @@ public class GameServiceTests {
         String token;
 
         UserService.RegisterRequest request = new UserService.RegisterRequest("user1", "password123", "user1@email.com");
-        UserService.RegisterResult result = userService.register(request);
+        UserService.RegisterResult result = testuserService.register(request);
         token = result.authToken();
 
         // Check that initially there are no games
-        List<GameData> games = gameService.listGames(token);
+        List<GameData> games = testgameService.listGames(token);
         assertTrue(games.isEmpty(), "Game list should be empty initially");
 
         // Create two games
         GameService.CreateGameRequest request1 = new GameService.CreateGameRequest(token, "game1");
         GameService.CreateGameRequest request2 = new GameService.CreateGameRequest(token, "game2");
 
-        gameService.createGame(request1);
-        gameService.createGame(request2);
+        testgameService.createGame(request1);
+        testgameService.createGame(request2);
 
         // Fetch the updated list of games
-        games = gameService.listGames(token);
+        games = testgameService.listGames(token);
 
         assertEquals(2, games.size(), "There should be exactly 2 games in the list");
     }
@@ -61,18 +61,18 @@ public class GameServiceTests {
 
         // Register a user
         UserService.RegisterRequest request = new UserService.RegisterRequest("user2", "password456", "user2@email.com");
-        UserService.RegisterResult result = userService.register(request);
+        UserService.RegisterResult result = testuserService.register(request);
         String token = result.authToken();
 
         // Create a game
         GameService.CreateGameRequest createRequest = new GameService.CreateGameRequest(token, "MyChessGame");
-        GameService.CreateGameResult gameResult = gameService.createGame(createRequest);
+        GameService.CreateGameResult gameResult = testgameService.createGame(createRequest);
 
         assertNotNull(gameResult, "Game creation result should not be null");
         assertTrue(gameResult.gameID() > 0, "Game ID should be a positive integer");
 
         // Verify that the game exists
-        List<GameData> games = gameService.listGames(token);
+        List<GameData> games = testgameService.listGames(token);
         assertEquals(1, games.size(), "There should be one game in the list");
         assertEquals("MyChessGame", games.get(0).getGameName(), "Game name should match the request");
     }
@@ -82,32 +82,32 @@ public class GameServiceTests {
     public void joinGameSuccess() throws DataAccessException, IncorrectPasswordException, GameAlreadyTakenException, InvalidColorException {
         // Register a user
         UserService.RegisterRequest request = new UserService.RegisterRequest("player1", "password789", "player1@email.com");
-        UserService.RegisterResult result = userService.register(request);
+        UserService.RegisterResult result = testuserService.register(request);
         String token = result.authToken();
 
         // Create a game
         GameService.CreateGameRequest createRequest = new GameService.CreateGameRequest(token, "JoinableGame");
-        GameService.CreateGameResult gameResult = gameService.createGame(createRequest);
+        GameService.CreateGameResult gameResult = testgameService.createGame(createRequest);
         int gameID = gameResult.gameID();
 
         // Join as white player
         GameService.JoinGameRequest joinRequest = new GameService.JoinGameRequest(token, "WHITE", gameID);
-        gameService.joinGame(joinRequest);
+        testgameService.joinGame(joinRequest);
 
         // Verify that the user is set as the white player
-        GameData game = dao.getGameDAO().getGame(gameID);
+        GameData game = testdao.getGameDAO().getGame(gameID);
         assertEquals("player1", game.getWhiteUsername(), "White player should be set correctly");
     }
 
     @Test
     @DisplayName("Successfully Clears Database")
     public void clearDatabaseSuccess() throws DataAccessException {
-        gameService.clearDatabase();
+        testgameService.clearDatabase();
 
         // Verify that all data has been removed
-        assertTrue(dao.getGameDAO().getAllGames().isEmpty(), "Games should be cleared");
-        assertTrue(dao.getUserDAO().getAllUsers().isEmpty(), "Users should be cleared");
-        assertTrue(dao.getAuthDAO().getAllAuth().isEmpty(), "Auth data should be cleared");
+        assertTrue(testdao.getGameDAO().getAllGames().isEmpty(), "Games should be cleared");
+        assertTrue(testdao.getUserDAO().getAllUsers().isEmpty(), "Users should be cleared");
+        assertTrue(testdao.getAuthDAO().getAllAuth().isEmpty(), "Auth data should be cleared");
     }
 
     // Negative
@@ -116,7 +116,7 @@ public class GameServiceTests {
     @DisplayName("List Games with Invalid Token (Fail)")
     public void listGamesInvalidToken() {
         assertThrows(DataAccessException.class, () -> {
-            gameService.listGames("invalid-token");
+            testgameService.listGames("invalid-token");
         }, "Should throw DataAccessException for unauthorized access");
     }
 
@@ -126,7 +126,7 @@ public class GameServiceTests {
         GameService.CreateGameRequest createRequest = new GameService.CreateGameRequest("invalid-token", "InvalidGame");
 
         assertThrows(DataAccessException.class, () -> {
-            gameService.createGame(createRequest);
+            testgameService.createGame(createRequest);
         }, "Should throw DataAccessException for unauthorized game creation");
     }
 
@@ -136,7 +136,7 @@ public class GameServiceTests {
         GameService.JoinGameRequest joinRequest = new GameService.JoinGameRequest("invalid-token", "white", 12345);
 
         assertThrows(DataAccessException.class, () -> {
-            gameService.joinGame(joinRequest);
+            testgameService.joinGame(joinRequest);
         }, "Should throw DataAccessException for joining with an invalid token");
     }
 
@@ -145,14 +145,14 @@ public class GameServiceTests {
     public void joinNonExistentGame() throws DataAccessException, IncorrectPasswordException {
         // Register a user
         UserService.RegisterRequest request = new UserService.RegisterRequest("player2", "password789", "player2@email.com");
-        UserService.RegisterResult result = userService.register(request);
+        UserService.RegisterResult result = testuserService.register(request);
         String token = result.authToken();
 
         // Try to join a game that doesn't exist
         GameService.JoinGameRequest joinRequest = new GameService.JoinGameRequest(token, "BLACK", 99999);
 
         assertThrows(DataAccessException.class, () -> {
-            gameService.joinGame(joinRequest);
+            testgameService.joinGame(joinRequest);
         }, "Should throw DataAccessException for joining a non-existent game");
     }
 }
