@@ -222,26 +222,6 @@ public class ChessPiece implements Cloneable {
         return listOfMoves;
     }
 
-    private ArrayList<ChessMove> getChessMoves(
-            ChessBoard board,
-            ChessPosition initPosition,
-            ArrayList<ChessMove> listOfMoves,
-            ChessPosition currPosition) {
-        if (!outOfBounds(currPosition)) {
-            if (board.getPiece(currPosition) != null) {
-                if (board.getPiece(currPosition).getTeamColor() != pieceColor) {
-                    if(currPosition.getRow() == 8 || currPosition.getRow() == 1) {
-                        // if on promotion square
-                        listOfMoves = addPromotions(initPosition, currPosition, listOfMoves);
-                    } else {
-                        listOfMoves.add(new ChessMove(initPosition, currPosition, null));
-                    }
-                }
-            }
-        }
-        return listOfMoves;
-    }
-
     private ArrayList<ChessMove> getQueenMoves(ChessBoard board, ChessPosition initPosition) {
         var listOfMoves = new ArrayList<ChessMove>();
         var directions = new int[][]{{1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}, {0, 1}};

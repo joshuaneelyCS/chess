@@ -185,21 +185,29 @@ public class ChessGame implements Cloneable{
         for (int r = 1; r <= 8; r++){
             for (int c = 1; c <= 8; c++){
                 piece = board.getPiece(new ChessPosition(r,c));
-                
-                // gets the moves of all the pieces that are not on the same team
-                if (piece != null && piece.getTeamColor() != teamColor) {
-                    // Gets the moves of opposing piece
-                    moves = piece.pieceMoves(board, new ChessPosition(r, c));
-                    // For each move, can it attack the king?
-                    for (ChessMove move : moves) {
-                        ChessPosition landingSquare = move.getEndPosition();
-                        ChessPiece opposingPiece = board.getPiece(landingSquare);
-                        if (opposingPiece != null && opposingPiece.getTeamColor() == teamColor &&
-                                opposingPiece.getPieceType() == ChessPiece.PieceType.KING) {
-                            // if a move can attack the king, they are in check
-                            return true;
-                        }
-                    }
+
+                if (extracted(teamColor, piece, r, c)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean extracted(TeamColor teamColor, ChessPiece piece, int r, int c) {
+        Collection<ChessMove> moves;
+        // gets the moves of all the pieces that are not on the same team
+        if (piece != null && piece.getTeamColor() != teamColor) {
+            // Gets the moves of opposing piece
+            moves = piece.pieceMoves(board, new ChessPosition(r, c));
+            // For each move, can it attack the king?
+            for (ChessMove move : moves) {
+                ChessPosition landingSquare = move.getEndPosition();
+                ChessPiece opposingPiece = board.getPiece(landingSquare);
+                if (opposingPiece != null && opposingPiece.getTeamColor() == teamColor &&
+                        opposingPiece.getPieceType() == ChessPiece.PieceType.KING) {
+                    // if a move can attack the king, they are in check
+                    return true;
                 }
             }
         }
