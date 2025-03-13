@@ -193,9 +193,9 @@ public class ChessGame implements Cloneable{
                     // For each move, can it attack the king?
                     for (ChessMove move : moves) {
                         ChessPosition landingSquare = move.getEndPosition();
-                        ChessPiece OpposingPiece = board.getPiece(landingSquare);
-                        if (OpposingPiece != null && OpposingPiece.getTeamColor() == teamColor) {
-                            if (OpposingPiece.getPieceType() == ChessPiece.PieceType.KING ) {
+                        ChessPiece opposingPiece = board.getPiece(landingSquare);
+                        if (opposingPiece != null && opposingPiece.getTeamColor() == teamColor) {
+                            if (opposingPiece.getPieceType() == ChessPiece.PieceType.KING ) {
                                 // if a move can attack the king, they are in check
                                 return true;
                             }
