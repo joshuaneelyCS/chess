@@ -69,7 +69,7 @@ public class ChessGame implements Cloneable{
         teamTurn = team;
     }
 
-    private void _changeTeamTurn() {
+    private void changeTeamTurn() {
         if (teamTurn == TeamColor.WHITE) {
             setTeamTurn(TeamColor.BLACK);
         } else {
@@ -167,7 +167,7 @@ public class ChessGame implements Cloneable{
         // remove the piece from its old square
         board.removePiece(move.getStartPosition());
 
-        _changeTeamTurn();
+        changeTeamTurn();
     }
 
     /**
@@ -274,7 +274,7 @@ public class ChessGame implements Cloneable{
     /**
      * Sets this game's chessboard with a given board
      *
-     * @param board the new board to use
+     * @paramboard the new board to use
      */
     public void setBoard(ChessBoard myBoard) {
         this.board = myBoard;
