@@ -222,17 +222,7 @@ public class ChessPiece implements Cloneable {
         }
         // Move one space forward
         currPosition = new ChessPosition(currPosition.getRow() + direction, currPosition.getColumn());
-        if (!outOfBounds(currPosition)) {
-            if (board.getPiece(currPosition) == null) {
-                if(currPosition.getRow() == 8 || currPosition.getRow() == 1) {
-                    // if on promotion square
-                    listOfMoves = addPromotions(initPosition, currPosition, listOfMoves);
-                }
-                else {
-                    listOfMoves.add(new ChessMove(initPosition, currPosition, null));
-                }
-            }
-        }
+        listOfMoves = getChessMoves(board, currPosition, listOfMoves, initPosition);
 
         // Attack spaces on the diagonal
         currPosition = initPosition;
