@@ -238,21 +238,16 @@ public class ChessPiece implements Cloneable {
         // Attack spaces on the diagonal
         currPosition = initPosition;
         currPosition = new ChessPosition(currPosition.getRow() + direction, currPosition.getColumn() + 1);
-        if (!outOfBounds(currPosition)) {
-            if (board.getPiece(currPosition) != null) {
-                if (board.getPiece(currPosition).getTeamColor() != pieceColor) {
-                    if(currPosition.getRow() == 8 || currPosition.getRow() == 1) {
-                        // if on promotion square
-                        listOfMoves = addPromotions(initPosition, currPosition, listOfMoves);
-                    } else {
-                        listOfMoves.add(new ChessMove(initPosition, currPosition, null));
-                    }
-                }
-            }
-        }
+        listOfMoves = getChessMoves(board, initPosition, listOfMoves, currPosition);
 
         currPosition = initPosition;
         currPosition = new ChessPosition(currPosition.getRow() + direction, currPosition.getColumn() - 1);
+        listOfMoves = getChessMoves(board, initPosition, listOfMoves, currPosition);
+
+        return listOfMoves;
+    }
+
+    private ArrayList<ChessMove> getChessMoves(ChessBoard board, ChessPosition initPosition, ArrayList<ChessMove> listOfMoves, ChessPosition currPosition) {
         if (!outOfBounds(currPosition)) {
             if (board.getPiece(currPosition) != null) {
                 if (board.getPiece(currPosition).getTeamColor() != pieceColor) {
@@ -265,7 +260,6 @@ public class ChessPiece implements Cloneable {
                 }
             }
         }
-
         return listOfMoves;
     }
 
