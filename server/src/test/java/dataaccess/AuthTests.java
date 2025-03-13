@@ -33,45 +33,45 @@ public class AuthTests {
 
     @Test
     @Order(2)
-    public void testCreateAuth_Failure_DuplicateToken() throws DataAccessException {
+    public void testCreateAuthFailureDuplicateToken() throws DataAccessException {
         AuthData duplicateAuth = new AuthData("token123", "newUser");
     }
 
     @Test
     @Order(3)
-    public void testGetAuth_Success() throws DataAccessException {
+    public void testGetAuthSuccess() throws DataAccessException {
         AuthData auth = authDAO.getAuth("token123");
         assertNotNull(auth);
     }
 
     @Test
     @Order(4)
-    public void testGetAuth_Failure_NonExistent() throws DataAccessException {
+    public void testGetAuthFailureNonExistent() throws DataAccessException {
         assertThrows(DataAccessException.class, () -> authDAO.getAuth("token123"));
     }
 
     @Test
     @Order(5)
-    public void testGetAllAuth_Success() throws DataAccessException {
+    public void testGetAllAuthSuccess() throws DataAccessException {
         List<AuthData> authList = authDAO.getAllAuth();
         assertFalse(authList.isEmpty());
     }
 
     @Test
     @Order(6)
-    public void testRemoveAuth_Success() throws DataAccessException {
+    public void testRemoveAuthSuccess() throws DataAccessException {
         assertThrows(DataAccessException.class, () -> authDAO.removeAuth("token123"));
     }
 
     @Test
     @Order(7)
-    public void testRemoveAuth_Failure_NonExistent() {
+    public void testRemoveAuthFailureNonExistent() {
         assertThrows(DataAccessException.class, () -> authDAO.removeAuth("invalidToken"));
     }
 
     @Test
     @Order(8)
-    public void testDeleteAllAuth_Success() throws DataAccessException {
+    public void testDeleteAllAuthSuccess() throws DataAccessException {
         authDAO.deleteAllAuth();
         List<AuthData> authList = authDAO.getAllAuth();
         assertTrue(authList.isEmpty());
