@@ -214,29 +214,31 @@ public class ChessGame implements Cloneable{
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        if(isInCheck(teamColor)) {
+            return checkTeamMoves(teamColor);
+        }
+        return false;
+    }
+
+    private boolean checkTeamMoves(TeamColor teamColor) {
         ChessPiece piece;
         Collection<ChessMove> moves;
-
-        if(isInCheck(teamColor)) {
-            // He's in check, are there any valid moves?
-            for (int r = 1; r <= 8; r++) {
-                for (int c = 1; c <= 8; c++) {
-                    // Check the valid moves it has
-                    moves = validMoves(new ChessPosition(r,c));
-                    piece = board.getPiece(new ChessPosition(r,c));
-                    // If there is a piece, and it has valid moves, and it is on the same team,
-                    // Then he is not in checkmate
-                    if (piece != null) {
-                        if ((moves.size() != 0) && piece.getTeamColor() == teamColor) {
-                            return false;
-                        }
+        // He's in check, are there any valid moves?
+        for (int r = 1; r <= 8; r++) {
+            for (int c = 1; c <= 8; c++) {
+                // Check the valid moves it has
+                moves = validMoves(new ChessPosition(r,c));
+                piece = board.getPiece(new ChessPosition(r,c));
+                // If there is a piece, and it has valid moves, and it is on the same team,
+                // Then he is not in checkmate
+                if (piece != null) {
+                    if ((moves.size() != 0) && piece.getTeamColor() == teamColor) {
+                        return false;
                     }
                 }
             }
-
-            return true;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -247,26 +249,8 @@ public class ChessGame implements Cloneable{
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        ChessPiece piece;
-        Collection<ChessMove> moves;
-
         if(!isInCheck(teamColor)) {
-            // He's in check, are there any valid moves?
-            for (int r = 1; r <= 8; r++) {
-                for (int c = 1; c <= 8; c++) {
-                    // Check the valid moves it has
-                    moves = validMoves(new ChessPosition(r,c));
-                    piece = board.getPiece(new ChessPosition(r,c));
-                    // If there is a piece, and it has valid moves, and it is on the same team,
-                    // Then he is not in checkmate
-                    if (piece != null) {
-                        if ((moves.size() != 0) && piece.getTeamColor() == teamColor) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
+            return checkTeamMoves(teamColor);
         }
         return false;
     }

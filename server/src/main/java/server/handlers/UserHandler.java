@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class UserHandler {
 
-    private static final Gson gson = new Gson();
+    private static final Gson GSON = new Gson();
     private final UserService userService;
 
     public UserHandler(UserService userService) {
@@ -24,17 +24,17 @@ public class UserHandler {
             res.type("application/json");
 
             try {
-                UserService.RegisterRequest registerRequest = gson.fromJson(req.body(), UserService.RegisterRequest.class);
+                UserService.RegisterRequest registerRequest = GSON.fromJson(req.body(), UserService.RegisterRequest.class);
                 UserService.RegisterResult result = userService.register(registerRequest);
                 res.status(200);
-                return gson.toJson(result);
+                return GSON.toJson(result);
 
             } catch (DataAccessException e) {
                 res.status(403);
-                return gson.toJson(Map.of("message", "Error: Username already exists"));
+                return GSON.toJson(Map.of("message", "Error: Username already exists"));
             } catch (IncorrectPasswordException e) {
                 res.status(400);
-                return gson.toJson(Map.of("message", "Error: Please fill in all fields"));
+                return GSON.toJson(Map.of("message", "Error: Please fill in all fields"));
             }
         };
     }
@@ -45,18 +45,18 @@ public class UserHandler {
 
             try {
 
-                UserService.LoginRequest loginRequest = gson.fromJson(req.body(), UserService.LoginRequest.class);
+                UserService.LoginRequest loginRequest = GSON.fromJson(req.body(), UserService.LoginRequest.class);
                 UserService.LoginResult result = userService.login(loginRequest);
 
                 System.out.println("Here is the result: " + result);
                 res.status(200);
-                return gson.toJson(result);
+                return GSON.toJson(result);
             } catch (UserNotFoundException e) {
                 res.status(401);
-                return gson.toJson(Map.of("message", "Error: User not found"));
+                return GSON.toJson(Map.of("message", "Error: User not found"));
             } catch (IncorrectPasswordException e) {
                 res.status(401);
-                return gson.toJson(Map.of("message", "Error: Incorrect Password"));
+                return GSON.toJson(Map.of("message", "Error: Incorrect Password"));
             }
         };
     }
@@ -70,18 +70,18 @@ public class UserHandler {
 
                 if (token == null || token.isEmpty()) {
                     res.status(401);
-                    return gson.toJson("Unauthorized");
+                    return GSON.toJson("Unauthorized");
                 }
 
                 userService.logout(token);
 
                 res.status(200);
-                return gson.toJson(Map.of("message", "Success"));
+                return GSON.toJson(Map.of("message", "Success"));
 
             } catch (DataAccessException e) {
 
                 res.status(401);
-                return gson.toJson(Map.of("message", "Error: token not found"));
+                return GSON.toJson(Map.of("message", "Error: token not found"));
             }
         };
     }

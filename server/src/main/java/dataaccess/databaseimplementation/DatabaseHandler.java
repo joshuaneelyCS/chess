@@ -56,19 +56,19 @@ public class DatabaseHandler {
 
     public class GameDataHandler {
 
-        private static final Gson gson = new Gson();
+        private static final Gson GSON = new Gson();
 
         // Convert a JSON String to a ChessGame object
         public static ChessGame convertStringToGame(String data) {
             if (data == null || data.isEmpty()) {
                 return new ChessGame(); // Return an empty ChessGame if data is null
             }
-            return gson.fromJson(data, ChessGame.class);
+            return GSON.fromJson(data, ChessGame.class);
         }
 
         // Convert a JSON String to a ChessGame object
         public static String convertGameToString(ChessGame data) {
-            return gson.toJson(data);
+            return GSON.toJson(data);
         }
 
 
