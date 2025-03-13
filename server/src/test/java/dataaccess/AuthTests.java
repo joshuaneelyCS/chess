@@ -22,7 +22,7 @@ public class AuthTests {
 
     @Test
     @Order(1)
-    public void testCreateAuth_Success() throws DataAccessException {
+    public void testCreateAuthSuccess() throws DataAccessException {
         AuthData auth = new AuthData("token123", "testUser");
         authDAO.createAuth(auth);
 
