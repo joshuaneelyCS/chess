@@ -234,7 +234,6 @@ public class ChessPiece implements Cloneable {
             }
         }
 
-
         // Attack spaces on the diagonal
         currPosition = initPosition;
         currPosition = new ChessPosition(currPosition.getRow() + direction, currPosition.getColumn() + 1);
