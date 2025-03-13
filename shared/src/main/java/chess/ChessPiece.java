@@ -223,7 +223,11 @@ public class ChessPiece implements Cloneable {
         return listOfMoves;
     }
 
-    private ArrayList<ChessMove> getChessMoves(ChessBoard board, ChessPosition initPosition, ArrayList<ChessMove> listOfMoves, ChessPosition currPosition) {
+    private ArrayList<ChessMove> getChessMoves(
+            ChessBoard board,
+            ChessPosition initPosition,
+            ArrayList<ChessMove> listOfMoves,
+            ChessPosition currPosition) {
         if (!outOfBounds(currPosition)) {
             if (board.getPiece(currPosition) != null) {
                 if (board.getPiece(currPosition).getTeamColor() != pieceColor) {
