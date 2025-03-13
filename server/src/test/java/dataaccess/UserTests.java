@@ -22,7 +22,7 @@ public class UserTests {
 
     @Test
     @Order(1)
-    public void testCreateUser_Success() throws DataAccessException {
+    public void testCreateUserSuccess() throws DataAccessException {
         UserData user = new UserData("testUser", "password123", "test@example.com");
         userDAO.createUser(user);
 
@@ -34,14 +34,14 @@ public class UserTests {
 
     @Test
     @Order(2)
-    public void testCreateUser_Failure_DuplicateUsername() throws DataAccessException {
+    public void testCreateUserFailureDuplicateUsername() throws DataAccessException {
         UserData duplicateUser = new UserData("testUser", "newpassword", "newemail@example.com");
         assertThrows(DataAccessException.class, () -> userDAO.createUser(duplicateUser));
     }
 
     @Test
     @Order(3)
-    public void testGetUser_Success() throws DataAccessException {
+    public void testGetUserSuccess() throws DataAccessException {
         UserData user = userDAO.getUser("testUser");
         assertNotNull(user);
         assertEquals("testUser", user.getUsername());
@@ -49,20 +49,20 @@ public class UserTests {
 
     @Test
     @Order(4)
-    public void testGetUser_Failure_NonExistent() throws DataAccessException {
+    public void testGetUserFailureNonExistent() throws DataAccessException {
         assertNull(userDAO.getUser("nonExistentUser"));
     }
 
     @Test
     @Order(5)
-    public void testGetAllUsers_Success() throws DataAccessException {
+    public void testGetAllUsersSuccess() throws DataAccessException {
         List<UserData> users = userDAO.getAllUsers();
         assertFalse(users.isEmpty());
     }
 
     @Test
     @Order(6)
-    public void testDeleteAllUsers_Success() throws DataAccessException {
+    public void testDeleteAllUsersSuccess() throws DataAccessException {
         userDAO.deleteAllUsers();
         List<UserData> users = userDAO.getAllUsers();
         assertTrue(users.isEmpty());
