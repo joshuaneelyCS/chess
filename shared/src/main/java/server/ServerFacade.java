@@ -4,39 +4,32 @@ import com.google.gson.Gson;
 import model.*;
 import java.io.*;
 import java.net.*;
-import service.UserService;
 
 public class ServerFacade {
     private final String serverUrl;
 
-    public ServerFacade(String url) {
-        serverUrl = url;
+    public ServerFacade(String serverUrl) {
+        this.serverUrl = serverUrl;
     }
 
     public record RegisterRequest(String username, String password, String email) {};
+    public record LoginRequest(String username, String password) {};
 
     public AuthData register(String username, String password, String email) throws Exception {
-        var path = "/pet";
+        var path = "/user";
         var request = new RegisterRequest(username, password, email);
         return this.makeRequest("POST", path, request, AuthData.class);
     }
 
-    public void deletePet(int id) throws Exception {
-        var path = String.format("/pet/%s", id);
-        this.makeRequest("DELETE", path, null, null);
+    public AuthData login(String username, String password) throws Exception {
+        var path = "/session";
+        var request = new LoginRequest(username, password);
+        return this.makeRequest("POST", path, request, AuthData.class);
     }
 
-    public void deleteAllPets() throws Exception {
-        var path = "/pet";
+    public void clearApplication() throws Exception {
+        var path = "/db";
         this.makeRequest("DELETE", path, null, null);
-    }
-
-    public Pet[] listPets() throws Exception {
-        var path = "/pet";
-        record listPetResponse(Pet[] pet) {
-        }
-        var response = this.makeRequest("GET", path, null, listPetResponse.class);
-        return response.pet();
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
@@ -48,7 +41,6 @@ public class ServerFacade {
 
             writeBody(request, http);
             http.connect();
-            throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
             throw ex;
@@ -63,19 +55,6 @@ public class ServerFacade {
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
-        }
-    }
-
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
-        var status = http.getResponseCode();
-        if (!isSuccessful(status)) {
-            try (InputStream respErr = http.getErrorStream()) {
-                if (respErr != null) {
-                    throw ResponseException.fromJson(respErr);
-                }
-            }
-
-            throw new ResponseException(status, "other failure: " + status);
         }
     }
 
