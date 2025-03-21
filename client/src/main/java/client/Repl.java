@@ -10,7 +10,7 @@ public class Repl {
     // private final PostClient postclient;
 
     public Repl(String serverUrl) {
-        preClient = new PreClient();
+        preClient = new PreClient(serverUrl);
     }
 
     public void run() {

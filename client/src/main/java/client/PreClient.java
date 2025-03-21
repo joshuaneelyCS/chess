@@ -1,21 +1,27 @@
 package client;
+import server.Server;
+import java.util.Arrays;
 
 public class PreClient implements client {
 
     private String visitorName = null;
-    private final ServerFacade server;
+    private final Server server;
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
 
     public PreClient(String serverUrl) {
-        server = new ServerFacade(serverUrl);
+        server = new Server(serverUrl);
         this.serverUrl = serverUrl;
-        this.notificationHandler = notificationHandler;
     }
 
     @Override
     public String help() {
-        return null;
+        return """
+                register <USERNAME> <PASSWORD> <VISITOR NAME> - to create an account 
+                login <USERNAME> <PASSWORD> - to play chess
+                quit - playing chess
+                help - with possible commands
+                """;
     }
 
     @Override
@@ -25,21 +31,16 @@ public class PreClient implements client {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "signin" -> signIn(params);
-                case "rescue" -> rescuePet(params);
-                case "list" -> listPets();
-                case "signout" -> signOut();
-                case "adopt" -> adoptPet(params);
-                case "adoptall" -> adoptAllPets();
+                case "register" -> register(params);
                 case "quit" -> "quit";
                 default -> help();
             };
-        } catch (ResponseException ex) {
+        } catch (Exception ex) {
             return ex.getMessage();
         }
     }
 
-    public String signIn(String... params) throws ResponseException {
+    public String register(String... params) throws Exception {
         if (params.length >= 1) {
             state = State.SIGNEDIN;
             visitorName = String.join("-", params);
@@ -47,7 +48,7 @@ public class PreClient implements client {
             ws.enterPetShop(visitorName);
             return String.format("You signed in as %s.", visitorName);
         }
-        throw new ResponseException(400, "Expected: <yourname>");
+        throw new Exception("Expected: <yourname>");
     }
 
 
