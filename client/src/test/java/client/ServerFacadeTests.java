@@ -2,17 +2,23 @@ package client;
 
 import org.junit.jupiter.api.*;
 import server.Server;
+import server.ServerFacade;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import model.*;
 
 
 public class ServerFacadeTests {
 
     private static Server server;
+    static ServerFacade facade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
-        var port = server.run(0);
+        var port = server.run(8080);
         System.out.println("Started test HTTP server on " + port);
+        facade = new ServerFacade(8080);
     }
 
     @AfterAll
@@ -23,7 +29,13 @@ public class ServerFacadeTests {
 
     @Test
     public void sampleTest() {
-        Assertions.assertTrue(true);
+        assertTrue(true);
+    }
+
+    @Test
+    void register() throws Exception {
+        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        assertTrue(authData.getAuthToken().length() > 10);
     }
 
 }

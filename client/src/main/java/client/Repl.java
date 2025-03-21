@@ -1,21 +1,20 @@
 package client;
 
-import javax.management.Notification;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
 public class Repl {
-    private final PreClient preClient;
+    private final LoginClient loginClient;
     // private final PostClient postclient;
 
     public Repl(String serverUrl) {
-        preClient = new PreClient(serverUrl);
+        loginClient = new LoginClient(serverUrl);
     }
 
     public void run() {
         System.out.println("♕ Welcome to Chess. Type help to get started. ♕");
-        System.out.print(preClient.help());
+        System.out.print(loginClient.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -24,7 +23,7 @@ public class Repl {
             String line = scanner.nextLine();
 
             try {
-                result = preClient.eval(line);
+                result = loginClient.eval(line);
                 System.out.println(SET_TEXT_COLOR_BLUE + result);
             } catch (Exception e) {
                 var msg = e.toString();

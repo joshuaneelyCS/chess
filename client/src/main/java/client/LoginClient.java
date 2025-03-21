@@ -1,16 +1,18 @@
 package client;
-// import server.Server;
 import java.util.Arrays;
+import server.Server;
+import server.ServerFacade;
 
-public class PreClient implements client {
+public class LoginClient implements client {
 
     private String visitorName = null;
-    //private final Server server;
     private final String serverUrl;
+    private final ServerFacade server;
     private State state = State.LOGGED_OUT;
 
-    public PreClient(String serverUrl) {
-        //server = new Server(serverUrl);
+    public LoginClient(String serverUrl) {
+        // I don't really do anything with the url
+        server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
     }
 
@@ -42,16 +44,16 @@ public class PreClient implements client {
     }
 
     public String register(String... params) throws Exception {
-        if (params.length >= 1) {
-            // state = State.SIGNEDIN;
-            visitorName = String.join("-", params);
-            // ws = new WebSocketFacade(serverUrl, notificationHandler);
-            // ws.enterPetShop(visitorName);
-            return String.format("You signed in as %s.", visitorName);
+        if (params.length == 3) {
+            try {
+                server.register(params[1], params[2], params[3]);
+                state = State.LOGGED_IN;
+                return String.format("Successfully registered. User is logged in");
+            } catch (Exception ex) {
+                throw new Exception(ex.getMessage());
+            }
         }
-        throw new Exception("Expected: <yourname>");
+        throw new Exception("Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
-
-
 
 }
