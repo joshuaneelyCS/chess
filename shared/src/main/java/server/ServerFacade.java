@@ -14,6 +14,8 @@ public class ServerFacade {
 
     public record RegisterRequest(String username, String password, String email) {};
     public record LoginRequest(String username, String password) {};
+    public record ListGameResponse(GameData[] gameData) { }
+    public record CreateGameRequest(String token, String gameName) { }
 
     public AuthData register(String username, String password, String email) throws Exception {
         var path = "/user";
@@ -32,6 +34,28 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, null);
     }
 
+    public void logout() throws Exception {
+        var path = "/session";
+        this.makeRequest("DELETE", path, null, null);
+    }
+
+    public GameData[] listGames() throws Exception {
+        var path = "/game";
+        var response = this.makeRequest("GET", path, null, ListGameResponse.class);
+        return response.gameData();
+    }
+
+    public void createGame(String token, String GameName) throws Exception {
+        var path = "/game";
+        var request = new CreateGameRequest(token, GameName);
+        this.makeRequest("POST", path, request, null);
+    }
+
+    public void joinGame() throws Exception {
+        var path = "/game";
+        this.makeRequest("PUT", path, null, null);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
@@ -46,7 +70,6 @@ public class ServerFacade {
             throw ex;
         }
     }
-
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
@@ -70,7 +93,6 @@ public class ServerFacade {
         }
         return response;
     }
-
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;

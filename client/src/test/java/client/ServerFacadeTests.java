@@ -61,9 +61,8 @@ public class ServerFacadeTests {
     @Test
     @Order(4)
     void loginTestFailure() throws Exception {
-        AuthData authData = facade.register("player1", "password", "p1@email.com");
-        assertThrows(Exception.class, () -> facade.register("player1", "password", "p1@email.com"));
+        facade.register("player1", "password", "p1@email.com");
+        AuthData authData = facade.login("player1", "password");
+        assertThrows(Exception.class, () -> facade.login("player1", "password2"));
     }
-
-
 }
