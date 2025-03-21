@@ -14,7 +14,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("Welcome to Chess. Type help to get started.");
+        System.out.println("♕ Welcome to Chess. Type help to get started. ♕");
         System.out.print(preClient.help());
 
         Scanner scanner = new Scanner(System.in);
