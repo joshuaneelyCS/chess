@@ -36,6 +36,7 @@ public class LoginClient implements Client {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "register" -> register(params);
+                case "login" -> login(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -54,6 +55,10 @@ public class LoginClient implements Client {
         this.state = state;
     }
 
+    public String getAuthToken() {
+        return token;
+    }
+
     public String register(String... params) throws Exception {
         if (params.length == 3) {
             try {
@@ -68,8 +73,19 @@ public class LoginClient implements Client {
         throw new Exception("Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
 
-    public String getAuthToken() {
-        return token;
+    public String login(String... params) throws Exception {
+        if (params.length == 2) {
+            try {
+                AuthData authData = server.login(params[0], params[1]);
+                token = authData.getAuthToken();
+                state = State.LOGGED_IN;
+                return String.format("Successfully registered. User is logged in");
+            } catch (Exception ex) {
+                throw new Exception(ex.getMessage());
+            }
+        }
+        throw new Exception("Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
+
 
 }
