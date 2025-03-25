@@ -132,11 +132,18 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     void clearApplicationSuccess() throws Exception {
+        AuthData user = facade.register("player1", "password", "p1@email.com");
+        facade.createGame(user.getAuthToken(), "test_game");
+
+        // Clear the entire application state
         facade.clearApplication();
+
+        // After clearing, login should fail
+        assertThrows(Exception.class, () -> facade.login("player1", "password"));
+
+        // And listing games should fail with invalid/old token
+        assertThrows(Exception.class, () -> facade.listGames(user.getAuthToken()));
     }
-
-
-
 }

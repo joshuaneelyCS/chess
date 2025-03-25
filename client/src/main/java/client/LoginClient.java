@@ -68,7 +68,7 @@ public class LoginClient implements Client {
                 state = State.LOGGED_IN;
                 return String.format("Successfully registered. User is logged in");
             } catch (Exception ex) {
-                throw new Exception(ex.getMessage());
+                throw new Exception("User already exists! Please try a different username");
             }
         }
         throw new Exception("Expected: <USERNAME> <PASSWORD> <EMAIL>");
@@ -82,10 +82,10 @@ public class LoginClient implements Client {
                 state = State.LOGGED_IN;
                 return String.format("Successfully logged in.");
             } catch (Exception ex) {
-                throw new Exception(ex.getMessage());
+                throw new Exception("Login failed: Try again or register a new account");
             }
         }
-        throw new Exception("Expected: <USERNAME> <PASSWORD> <EMAIL>");
+        throw new Exception("Expected: <USERNAME> <PASSWORD>");
     }
 
     public void logout(String token) {

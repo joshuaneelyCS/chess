@@ -55,6 +55,7 @@ public class GameClient implements Client {
     public void setGame(int gameID, String playerColor) {
         this.gameID = gameID;
         drawBoard(gameID, "WHITE");
+        System.out.println();
         drawBoard(gameID, "BLACK");
     }
 

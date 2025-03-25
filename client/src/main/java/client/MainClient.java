@@ -105,6 +105,14 @@ public class MainClient implements Client {
 
                 // find Game ID
                 GameData[] games = server.listGames(token);
+                try {
+                    if (Integer.parseInt(params[0])-1 > games.length) {
+                        return String.format("Game does not exist. Please create a new game", params[0]);
+                    }
+                } catch (NumberFormatException ex) {
+                    return String.format("Invalid Game ID. Please try again", params[0]);
+                }
+
                 var game = games[Integer.parseInt(params[0])-1];
                 gameID = game.getGameID();
 
