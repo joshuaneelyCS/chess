@@ -28,7 +28,7 @@ public class ServerFacadeTests {
 
     @BeforeEach
     public void initTest() throws Exception {
-        String serverUrl = "http://localhost:8080";
+        String serverUrl = "http://localhost:0";
         facade = new ServerFacade(serverUrl);
         facade.clearApplication();
     }
