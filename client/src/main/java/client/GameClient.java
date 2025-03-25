@@ -51,12 +51,13 @@ public class GameClient implements Client {
 
     }
 
-    public void setGame(int gameID) {
+    public void setGame(int gameID, String playerColor) {
         this.gameID = gameID;
-        drawBoard(gameID);
+        drawBoard(gameID, "WHITE");
+        drawBoard(gameID, "BLACK");
     }
 
-    public void drawBoard(int gameID) {
-        System.out.println("Drawing board");
+    public void drawBoard(int gameID, String playerColor) {
+        ChessBoardUI.drawBoard(gameID, playerColor);
     }
 }

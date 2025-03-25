@@ -39,10 +39,11 @@ public class Repl {
                         if (mainClient.getState() == State.IN_GAME) {
 
                             int gameID = mainClient.getGameID();
+                            String playerColor = mainClient.getPlayerColor();
 
                             if (gameID != 0) {
 
-                                gameClient.setGame(gameID);
+                                gameClient.setGame(gameID, playerColor);
 
                                 while (!result.equals("quit")) {
                                     result = runClient(scanner, gameClient, result);

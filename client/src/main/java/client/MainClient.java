@@ -14,6 +14,7 @@ public class MainClient implements Client {
     private State state = State.OUT_GAME;
     private String token;
     private int gameID;
+    private String playerColor = "WHITE";
 
     public MainClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -100,6 +101,7 @@ public class MainClient implements Client {
             try {
                 // Allows 'white' and 'WHITE'
                 params[1] = params[1].toUpperCase();
+                playerColor = params[1];
 
                 // find Game ID
                 GameData[] games = server.listGames(token);
@@ -124,6 +126,7 @@ public class MainClient implements Client {
                 GameData[] games = server.listGames(token);
                 var game = games[Integer.parseInt(params[0])-1];
                 gameID = game.getGameID();
+                playerColor = "WHITE";
 
                 state = State.IN_GAME;
                 return String.format("Observing game %s", game.getGameName());
@@ -132,6 +135,10 @@ public class MainClient implements Client {
             }
         }
         throw new Exception("Expected: <ID>");
+    }
+
+    public String getPlayerColor() {
+        return playerColor;
     }
 
     public int getGameID() {
