@@ -22,20 +22,31 @@ public class Repl {
 
         while (!result.equals("quit")) {
             if (loginClient.getState() == State.LOGGED_IN) {
-                while (!result.equals("quit")) {
-                    result = runMain(scanner, result);
+
+                var token = loginClient.getAuthToken();
+
+                if (token != null) {
+                    mainClient.setToken(token);
+
+                    while (!result.equals("quit")) {
+                        result = runClient(scanner, mainClient, result);
+                    }
+                } else {
+                    System.out.println("Sorry something went wrong generating a token");
                 }
+
+                mainClient.setToken(null);
             } else {
-                result = runLogin(scanner, result);
+                result = runClient(scanner, loginClient, result);
             }
         }
     }
 
-    private String runLogin(Scanner scanner, String result) {
+    private String runClient(Scanner scanner, Client client, String result) {
         printPrompt();
         String line = scanner.nextLine();
         try {
-            result = loginClient.eval(line);
+            result = client.eval(line);
             System.out.println(SET_TEXT_COLOR_BLUE + result);
             return result;
         } catch (Exception e) {

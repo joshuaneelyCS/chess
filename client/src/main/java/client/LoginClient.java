@@ -1,13 +1,15 @@
 package client;
 import java.util.Arrays;
-import server.Server;
+
+import model.AuthData;
 import server.ServerFacade;
 
-public class LoginClient implements client {
+public class LoginClient implements Client {
 
     private final String serverUrl;
     private final ServerFacade server;
     private State state = State.LOGGED_OUT;
+    private String token;
 
     public LoginClient(String serverUrl) {
         // I don't really do anything with the url
@@ -19,10 +21,10 @@ public class LoginClient implements client {
     public String help() {
         return """
                 Options:
-                Login as an existing user: "l", "login" <USERNAME> <PASSWORD> 
-                Register a new user: "r", "register" <USERNAME> <PASSWORD> <EMAIL>
-                Exit the program: "q", "quit"
-                Print this message: "h", "help"
+                Login as an existing user: "login" <USERNAME> <PASSWORD> 
+                Register a new user: "register" <USERNAME> <PASSWORD> <EMAIL>
+                Exit the program: "quit"
+                Print this message: "help"
                 """;
     }
 
@@ -50,7 +52,8 @@ public class LoginClient implements client {
     public String register(String... params) throws Exception {
         if (params.length == 3) {
             try {
-                server.register(params[0], params[1], params[2]);
+                AuthData authData = server.register(params[0], params[1], params[2]);
+                token = authData.getAuthToken();
                 state = State.LOGGED_IN;
                 return String.format("Successfully registered. User is logged in");
             } catch (Exception ex) {
@@ -58,6 +61,10 @@ public class LoginClient implements client {
             }
         }
         throw new Exception("Expected: <USERNAME> <PASSWORD> <EMAIL>");
+    }
+
+    public String getAuthToken() {
+        return token;
     }
 
 }
