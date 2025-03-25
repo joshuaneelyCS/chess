@@ -79,7 +79,7 @@ public class LoginClient implements Client {
                 AuthData authData = server.login(params[0], params[1]);
                 token = authData.getAuthToken();
                 state = State.LOGGED_IN;
-                return String.format("Successfully registered. User is logged in");
+                return String.format("Successfully logged in.");
             } catch (Exception ex) {
                 throw new Exception(ex.getMessage());
             }
@@ -87,5 +87,14 @@ public class LoginClient implements Client {
         throw new Exception("Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
 
+    public void logout(String token) {
+        try {
+            state = State.LOGGED_OUT;
+            server.logout(token);
+        } catch (Exception ex) {
+            System.out.println("Error logging out: " + ex.getMessage());
+        }
+
+    }
 
 }

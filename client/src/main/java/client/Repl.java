@@ -30,6 +30,8 @@ public class Repl {
 
                     while (!result.equals("logout")) {
                         result = runClient(scanner, mainClient, result);
+
+                        // TODO - This is where the game logic goes
                     }
 
                 } else {
@@ -37,7 +39,7 @@ public class Repl {
                 }
 
                 mainClient.setToken(null);
-                loginClient.setState(State.LOGGED_OUT);
+                loginClient.logout(token);
             } else {
                 result = runClient(scanner, loginClient, result);
             }
