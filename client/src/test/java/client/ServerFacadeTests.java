@@ -4,9 +4,9 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import model.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -51,7 +51,7 @@ public class ServerFacadeTests {
 
     @Test
     @Order(3)
-    void LoginTestSuccess() throws Exception {
+    void loginTestSuccess() throws Exception {
         facade.register("player1", "password", "p1@email.com");
         AuthData authData = facade.login("player1", "password");
         assertTrue(authData.getAuthToken().length() > 10);
@@ -67,14 +67,14 @@ public class ServerFacadeTests {
 
     @Test
     @Order(5)
-    void LogoutTestSuccess() throws Exception {
+    void logoutTestSuccess() throws Exception {
         AuthData authData = facade.register("player1", "password", "p1@email.com");
         facade.logout(authData.getAuthToken());
     }
 
     @Test
     @Order(6)
-    void LogoutTestFailure() throws Exception {
+    void logoutTestFailure() throws Exception {
         AuthData authData = facade.register("player1", "password", "p1@email.com");
         assertThrows(Exception.class, () -> facade.logout(null));
     }
@@ -106,13 +106,8 @@ public class ServerFacadeTests {
 
     @Test
     @Order(10)
-    void listGameFailure() throws Exception {
-        AuthData user = facade.register("player1", "password", "p1@email.com");
-        facade.createGame(user.getAuthToken(), "test_game1");
-        facade.createGame(user.getAuthToken(), "test_game2");
-        facade.createGame(user.getAuthToken(), "test_game3");
-        GameData[] games = facade.listGames(user.getAuthToken());
-        assertTrue(games.length == 3);
+    void listGameFailure() {
+        assertThrows(Exception.class, () -> facade.listGames(null));
     }
 
     @Test
@@ -120,7 +115,7 @@ public class ServerFacadeTests {
     void joinGameSuccess() throws Exception {
         AuthData authData = facade.register("player1", "password", "p1@email.com");
         int gameID = facade.createGame(authData.getAuthToken(), "test_game1");
-        facade.joinGame(authData.getAuthToken(), "WHITE", gameID);
+        assertDoesNotThrow(() -> facade.joinGame(authData.getAuthToken(), "WHITE", gameID));
     }
 
     @Test

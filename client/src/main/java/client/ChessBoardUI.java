@@ -142,7 +142,9 @@ public class ChessBoardUI {
     }
 
     private static char getPieceSymbol(ChessPiece piece, PrintStream out) {
-        if (piece == null) return ' ';
+        if (piece == null) {
+            return ' ';
+        }
 
         if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
             out.print(SET_TEXT_COLOR_RED);

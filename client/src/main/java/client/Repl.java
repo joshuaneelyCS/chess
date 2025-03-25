@@ -20,63 +20,59 @@ public class Repl {
         System.out.print(loginClient.help());
 
         Scanner scanner = new Scanner(System.in);
-        var result = "";
+        String result = "";
 
-        // RUN
         while (!result.equals("quit")) {
-
-            // IF LOGGED IN
-            if (loginClient.getState() == State.LOGGED_IN) {
-
-                var token = loginClient.getAuthToken();
-
-                if (token != null) {
-                    mainClient.setToken(token);
-
-                    while (!result.equals("logout")) {
-
-                        // IF IN GAME
-                        if (mainClient.getState() == State.IN_GAME) {
-
-                            int gameID = mainClient.getGameID();
-                            String playerColor = mainClient.getPlayerColor();
-
-                            if (gameID != 0) {
-
-                                gameClient.setGame(gameID, playerColor);
-
-                                while (!result.equals("quit")) {
-                                    result = runClient(scanner, gameClient, result);
-                                }
-
-                                System.out.print(mainClient.help());
-
-                            } else {
-                                System.out.println("Sorry. Something went wrong joining the game");
-                            }
-
-                            mainClient.setState(State.OUT_GAME);
-
-                            // IF NOT IN GAME
-                        } else {
-                            result = runClient(scanner, mainClient, result);
-                        }
-                    }
-
-                    System.out.print(loginClient.help());
-
-                } else {
-                    System.out.println("Sorry something went wrong generating a token");
-                }
-
-                mainClient.setToken(null);
-                loginClient.logout(token);
-
-                // IF NOT LOGGED IN
-            } else {
+            if (loginClient.getState() != State.LOGGED_IN) {
                 result = runClient(scanner, loginClient, result);
+                continue;
             }
+
+            String token = loginClient.getAuthToken();
+            if (token == null) {
+                System.out.println("Sorry something went wrong generating a token");
+                continue;
+            }
+
+            mainClient.setToken(token);
+            result = handleLoggedIn(scanner, result);
+
+            loginClient.logout(token);
+            mainClient.setToken(null);
+            System.out.print(loginClient.help());
         }
+    }
+
+    private String handleLoggedIn(Scanner scanner, String result) {
+        while (!result.equals("logout")) {
+            if (mainClient.getState() != State.IN_GAME) {
+                result = runClient(scanner, mainClient, result);
+                continue;
+            }
+
+            result = handleGameSession(scanner, result);
+            mainClient.setState(State.OUT_GAME);
+            System.out.print(mainClient.help());
+        }
+        return result;
+    }
+
+    private String handleGameSession(Scanner scanner, String result) {
+        int gameID = mainClient.getGameID();
+        String playerColor = mainClient.getPlayerColor();
+
+        if (gameID == 0) {
+            System.out.println("Sorry. Something went wrong joining the game");
+            return result;
+        }
+
+        gameClient.setGame(gameID, playerColor);
+
+        while (!result.equals("quit") && !result.equals("logout")) {
+            result = runClient(scanner, gameClient, result);
+        }
+
+        return result;
     }
 
     private String runClient(Scanner scanner, Client client, String result) {

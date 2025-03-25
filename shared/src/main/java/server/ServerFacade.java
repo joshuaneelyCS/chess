@@ -49,9 +49,9 @@ public class ServerFacade {
         return response.games();
     }
 
-    public int createGame(String token, String GameName) throws Exception {
+    public int createGame(String token, String gameName) throws Exception {
         var path = "/game";
-        var request = new CreateGameRequest(GameName);
+        var request = new CreateGameRequest(gameName);
         var response = this.makeRequest("POST", path, request, CreateGameResponse.class, token);
         return response.gameID();
     }
