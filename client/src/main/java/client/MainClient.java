@@ -98,7 +98,7 @@ public class MainClient implements Client {
                 params[0] = params[0].toUpperCase();
                 server.joinGame(this.token, params[0], Integer.parseInt(params[1]));
                 state = State.IN_GAME;
-                return String.format("Successfully joined game: %s.", params[0]);
+                return String.format("Successfully joined game %s as %s", params[1], params[0]);
             } catch (Exception ex) {
                 throw new Exception(ex.getMessage());
             }
