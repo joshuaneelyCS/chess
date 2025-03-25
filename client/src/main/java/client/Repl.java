@@ -6,10 +6,11 @@ import static ui.EscapeSequences.*;
 
 public class Repl {
     private final LoginClient loginClient;
-    // private final PostClient postclient;
+    private final MainClient mainClient;
 
     public Repl(String serverUrl) {
         loginClient = new LoginClient(serverUrl);
+        mainClient = new MainClient(serverUrl);
     }
 
     public void run() {
@@ -18,19 +19,30 @@ public class Repl {
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while (!result.equals("quit")) {
-            printPrompt();
-            String line = scanner.nextLine();
 
-            try {
-                result = loginClient.eval(line);
-                System.out.println(SET_TEXT_COLOR_BLUE + result);
-            } catch (Exception e) {
-                var msg = e.toString();
-                System.out.print(msg);
+        while (!result.equals("quit")) {
+            if (loginClient.getState() == State.LOGGED_IN) {
+                while (!result.equals("quit")) {
+                    result = runMain(scanner, result);
+                }
+            } else {
+                result = runLogin(scanner, result);
             }
         }
-        System.out.println();
+    }
+
+    private String runLogin(Scanner scanner, String result) {
+        printPrompt();
+        String line = scanner.nextLine();
+        try {
+            result = loginClient.eval(line);
+            System.out.println(SET_TEXT_COLOR_BLUE + result);
+            return result;
+        } catch (Exception e) {
+            var msg = e.toString();
+            System.out.print(msg);
+            return null;
+        }
     }
 
     private void printPrompt() {

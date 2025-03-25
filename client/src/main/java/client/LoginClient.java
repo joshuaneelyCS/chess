@@ -5,7 +5,6 @@ import server.ServerFacade;
 
 public class LoginClient implements client {
 
-    private String visitorName = null;
     private final String serverUrl;
     private final ServerFacade server;
     private State state = State.LOGGED_OUT;
@@ -41,6 +40,11 @@ public class LoginClient implements client {
         } catch (Exception ex) {
             return ex.getMessage();
         }
+    }
+
+    @Override
+    public State getState() {
+        return state;
     }
 
     public String register(String... params) throws Exception {
