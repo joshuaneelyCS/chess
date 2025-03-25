@@ -48,6 +48,8 @@ public class Repl {
                                     result = runClient(scanner, gameClient, result);
                                 }
 
+                                System.out.print(mainClient.help());
+
                             } else {
                                 System.out.println("Sorry. Something went wrong joining the game");
                             }
@@ -59,6 +61,8 @@ public class Repl {
                             result = runClient(scanner, mainClient, result);
                         }
                     }
+
+                    System.out.print(loginClient.help());
 
                 } else {
                     System.out.println("Sorry something went wrong generating a token");
