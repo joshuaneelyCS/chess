@@ -127,8 +127,14 @@ public class ServerFacadeTests {
     @Order(12)
     void joinGameFailure() throws Exception {
         AuthData authData = facade.register("player1", "password", "p1@email.com");
-        int gameID = facade.createGame(authData.getAuthToken(), "test_game1");
-        facade.joinGame(authData.getAuthToken(), "WHITE", gameID);
+        facade.createGame(authData.getAuthToken(), "test_game1");
+        assertThrows(Exception.class, () -> facade.joinGame(authData.getAuthToken(), "WHITE", 0));
+    }
+
+    @Test
+    @Order(12)
+    void clearApplicationSuccess() throws Exception {
+        facade.clearApplication();
     }
 
 
