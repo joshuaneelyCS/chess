@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessBoard;
 import server.ServerFacade;
 
 import java.util.Arrays;
@@ -58,6 +59,8 @@ public class GameClient implements Client {
     }
 
     public void drawBoard(int gameID, String playerColor) {
-        ChessBoardUI.drawBoard(gameID, playerColor);
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        ChessBoardUI.drawBoard(gameID, playerColor, board);
     }
 }

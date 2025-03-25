@@ -1,5 +1,9 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
+
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
@@ -19,14 +23,14 @@ public class ChessBoardUI {
 
     private static Random rand = new Random();
 
-    public static void drawBoard(int gameID, String playerColor) {
+    public static void drawBoard(int gameID, String playerColor, ChessBoard board) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
 
         drawHeaders(out, playerColor);
 
-        drawChessBoard(out, playerColor);
+        drawChessBoard(out, playerColor, board);
 
         drawHeaders(out, playerColor);
 
@@ -59,18 +63,18 @@ public class ChessBoardUI {
         setWhite(out);
     }
 
-    private static void drawChessBoard(PrintStream out, String playerColor) {
+    private static void drawChessBoard(PrintStream out, String playerColor, ChessBoard board) {
 
         String[] column = { "8", "7", "6", "5", "4", "3", "2", "1" };
 
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
 
-            drawRowOfSquares(out, column[boardRow], playerColor);
+            drawRowOfSquares(out, column[boardRow], board.getBoard()[boardRow], playerColor);
             setWhite(out);
         }
     }
 
-    private static void drawRowOfSquares(PrintStream out, String rowNum, String playerColor) {
+    private static void drawRowOfSquares(PrintStream out, String rowNum, ChessPiece[] row, String playerColor) {
         out.print(SET_BG_COLOR_WHITE);
         out.print(SET_TEXT_COLOR_BLACK);
 
@@ -95,8 +99,35 @@ public class ChessBoardUI {
         for (int squareRow = 0; squareRow < BOARD_SIZE_IN_SQUARES; ++squareRow) {
             out.print(tileColor);
 
+            ChessPiece piece = row[squareRow];
+            char pieceSymbol;
+            if (piece != null) {
+                if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                    out.print(SET_TEXT_COLOR_RED);
+                } else {
+                    out.print(SET_TEXT_COLOR_BLUE);
+                }
+
+                if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
+                    pieceSymbol = 'R';
+                } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                    pieceSymbol = 'K';
+                } else if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
+                    pieceSymbol = 'B';
+                } else if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
+                    pieceSymbol = 'Q';
+                } else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    pieceSymbol = 'K';
+                } else {
+                    pieceSymbol = 'P';
+                }
+            } else {
+                pieceSymbol = ' ';
+            }
+
+
             out.print(" ");
-            out.print(" ");
+            out.print(pieceSymbol);
             out.print(" ");
 
             if (tileColor.equals(SET_BG_COLOR_WHITE)) {
@@ -105,6 +136,7 @@ public class ChessBoardUI {
                 tileColor = SET_BG_COLOR_WHITE;
             }
 
+            out.print(SET_TEXT_COLOR_BLACK);
             out.print(SET_BG_COLOR_WHITE);
         }
 
