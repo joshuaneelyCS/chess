@@ -12,9 +12,10 @@ public class LoginClient implements Client {
     private String token;
 
     public LoginClient(String serverUrl) {
-        // I don't really do anything with the url
+
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+
     }
 
     @Override
