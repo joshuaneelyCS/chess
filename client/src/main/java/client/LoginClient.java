@@ -46,7 +46,7 @@ public class LoginClient implements client {
     public String register(String... params) throws Exception {
         if (params.length == 3) {
             try {
-                server.register(params[1], params[2], params[3]);
+                server.register(params[0], params[1], params[2]);
                 state = State.LOGGED_IN;
                 return String.format("Successfully registered. User is logged in");
             } catch (Exception ex) {
