@@ -18,4 +18,18 @@ public class ChessBoardUITest {
         board.resetBoard();
         ChessBoardUI.drawBoard(12345, "BLACK", board);
     }
+
+    @Test
+    void printWhiteBoard2() {
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        ChessBoardUI.drawBoard(12345, "WHITE", board);
+    }
+
+    @Test
+    void printBlackBoard2() {
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        ChessBoardUI.drawBoard(12345, "BLACK", board);
+    }
 }
