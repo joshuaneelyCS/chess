@@ -19,7 +19,6 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(8080);
         System.out.println("Started test HTTP server on " + port);
-
     }
 
     @AfterAll
@@ -65,4 +64,73 @@ public class ServerFacadeTests {
         AuthData authData = facade.login("player1", "password");
         assertThrows(Exception.class, () -> facade.login("player1", "password2"));
     }
+
+    @Test
+    @Order(5)
+    void LogoutTestSuccess() throws Exception {
+        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        facade.logout(authData.getAuthToken());
+    }
+
+    @Test
+    @Order(6)
+    void LogoutTestFailure() throws Exception {
+        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        assertThrows(Exception.class, () -> facade.logout(null));
+    }
+
+    @Test
+    @Order(7)
+    void createGameSuccess() throws Exception {
+        AuthData user = facade.register("player1", "password", "p1@email.com");
+        facade.createGame(user.getAuthToken(), "test_game");
+    }
+
+    @Test
+    @Order(8)
+    void createGameFailure() throws Exception {
+        facade.register("player1", "password", "p1@email.com");
+        assertThrows(Exception.class, () -> facade.createGame(null, "test_game"));
+    }
+
+    @Test
+    @Order(9)
+    void listGameSuccess() throws Exception {
+        AuthData user = facade.register("player1", "password", "p1@email.com");
+        facade.createGame(user.getAuthToken(), "test_game1");
+        facade.createGame(user.getAuthToken(), "test_game2");
+        facade.createGame(user.getAuthToken(), "test_game3");
+        GameData[] games = facade.listGames(user.getAuthToken());
+        assertTrue(games.length == 3);
+    }
+
+    @Test
+    @Order(10)
+    void listGameFailure() throws Exception {
+        AuthData user = facade.register("player1", "password", "p1@email.com");
+        facade.createGame(user.getAuthToken(), "test_game1");
+        facade.createGame(user.getAuthToken(), "test_game2");
+        facade.createGame(user.getAuthToken(), "test_game3");
+        GameData[] games = facade.listGames(user.getAuthToken());
+        assertTrue(games.length == 3);
+    }
+
+    @Test
+    @Order(11)
+    void joinGameSuccess() throws Exception {
+        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        int gameID = facade.createGame(authData.getAuthToken(), "test_game1");
+        facade.joinGame(authData.getAuthToken(), "WHITE", gameID);
+    }
+
+    @Test
+    @Order(12)
+    void joinGameFailure() throws Exception {
+        AuthData authData = facade.register("player1", "password", "p1@email.com");
+        int gameID = facade.createGame(authData.getAuthToken(), "test_game1");
+        facade.joinGame(authData.getAuthToken(), "WHITE", gameID);
+    }
+
+
+
 }
