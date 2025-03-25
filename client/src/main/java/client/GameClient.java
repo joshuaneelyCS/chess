@@ -10,13 +10,11 @@ public class GameClient implements Client {
     private final ServerFacade server;
     private State state = State.LOGGED_OUT;
     private String token;
-    private final int gameID;
+    private int gameID;
 
-    public GameClient(String serverUrl, int gameID) {
+    public GameClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
-        this.gameID = gameID;
-        drawBoard(gameID);
     }
 
     @Override
@@ -51,6 +49,11 @@ public class GameClient implements Client {
     @Override
     public void setState(State state) {
 
+    }
+
+    public void setGame(int gameID) {
+        this.gameID = gameID;
+        drawBoard(gameID);
     }
 
     public void drawBoard(int gameID) {

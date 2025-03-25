@@ -7,10 +7,12 @@ import static ui.EscapeSequences.*;
 public class Repl {
     private final LoginClient loginClient;
     private final MainClient mainClient;
+    private final GameClient gameClient;
 
     public Repl(String serverUrl) {
         loginClient = new LoginClient(serverUrl);
         mainClient = new MainClient(serverUrl);
+        gameClient = new GameClient(serverUrl);
     }
 
     public void run() {
@@ -20,7 +22,10 @@ public class Repl {
         Scanner scanner = new Scanner(System.in);
         var result = "";
 
+        // RUN
         while (!result.equals("quit")) {
+
+            // IF LOGGED IN
             if (loginClient.getState() == State.LOGGED_IN) {
 
                 var token = loginClient.getAuthToken();
@@ -29,9 +34,30 @@ public class Repl {
                     mainClient.setToken(token);
 
                     while (!result.equals("logout")) {
-                        result = runClient(scanner, mainClient, result);
 
-                        // TODO - This is where the game logic goes
+                        // IF IN GAME
+                        if (mainClient.getState() == State.IN_GAME) {
+
+                            int gameID = mainClient.getGameID();
+
+                            if (gameID != 0) {
+
+                                gameClient.setGame(gameID);
+
+                                while (!result.equals("quit")) {
+                                    result = runClient(scanner, gameClient, result);
+                                }
+
+                            } else {
+                                System.out.println("Sorry. Something went wrong joining the game");
+                            }
+
+                            mainClient.setState(State.OUT_GAME);
+
+                            // IF NOT IN GAME
+                        } else {
+                            result = runClient(scanner, mainClient, result);
+                        }
                     }
 
                 } else {
@@ -40,6 +66,8 @@ public class Repl {
 
                 mainClient.setToken(null);
                 loginClient.logout(token);
+
+                // IF NOT LOGGED IN
             } else {
                 result = runClient(scanner, loginClient, result);
             }

@@ -13,6 +13,7 @@ public class MainClient implements Client {
     private final ServerFacade server;
     private State state = State.OUT_GAME;
     private String token;
+    private int gameID;
 
     public MainClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -99,6 +100,7 @@ public class MainClient implements Client {
             try {
                 params[0] = params[0].toUpperCase();
                 server.joinGame(this.token, params[0], Integer.parseInt(params[1]));
+                gameID = Integer.parseInt(params[1]);
                 state = State.IN_GAME;
                 return String.format("Successfully joined game %s as %s", params[1], params[0]);
             } catch (Exception ex) {
@@ -109,6 +111,20 @@ public class MainClient implements Client {
     }
 
     private String observeGame(String... params) throws Exception {
-        return "";
+        if (params.length == 1) {
+            try {
+                // TODO observe vs play game
+                gameID = Integer.parseInt(params[0]);
+                state = State.IN_GAME;
+                return String.format("Observing game %s", params[0]);
+            } catch (Exception ex) {
+                throw new Exception(ex.getMessage());
+            }
+        }
+        throw new Exception("Expected: <GAME_ID>");
+    }
+
+    public int getGameID() {
+        return gameID;
     }
 }
