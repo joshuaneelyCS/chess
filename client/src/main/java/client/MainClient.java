@@ -29,7 +29,8 @@ public class MainClient implements Client {
                 Options:
                 List all games: "listGames"
                 Create a game: "createGame" <GAME_NAME>
-                Join a game: "joinGame" <PLAYER_COLOR> <GAME_ID>
+                Join a game: "joinGame" [WHITE|BLACK] <GAME_ID>
+                Observe a game: "observe" <GAME_ID>
                 Logout: "logout"
                 Print this message: "help"
                 """;
@@ -45,6 +46,7 @@ public class MainClient implements Client {
                 case "listGames" -> listGames();
                 case "createGame" -> createGame(params);
                 case "joinGame" -> joinGame(params);
+                case "observe" -> observeGame(params);
                 case "logout" -> "logout";
                 default -> help();
             };
@@ -103,6 +105,10 @@ public class MainClient implements Client {
                 throw new Exception(ex.getMessage());
             }
         }
-        throw new Exception("Expected: <PLAYER_COLOR> <GAME_ID>");
+        throw new Exception("Expected: [WHITE|BLACK] <GAME_ID>");
+    }
+
+    private String observeGame(String... params) throws Exception {
+        return "";
     }
 }
