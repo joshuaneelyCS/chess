@@ -49,6 +49,11 @@ public class LoginClient implements Client {
         return state;
     }
 
+    @Override
+    public void setState(State state) {
+        this.state = state;
+    }
+
     public String register(String... params) throws Exception {
         if (params.length == 3) {
             try {

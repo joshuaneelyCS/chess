@@ -28,14 +28,16 @@ public class Repl {
                 if (token != null) {
                     mainClient.setToken(token);
 
-                    while (!result.equals("quit")) {
+                    while (!result.equals("logout")) {
                         result = runClient(scanner, mainClient, result);
                     }
+
                 } else {
                     System.out.println("Sorry something went wrong generating a token");
                 }
 
                 mainClient.setToken(null);
+                loginClient.setState(State.LOGGED_OUT);
             } else {
                 result = runClient(scanner, loginClient, result);
             }

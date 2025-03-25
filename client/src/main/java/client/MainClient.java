@@ -41,7 +41,7 @@ public class MainClient implements Client {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "joinGame" -> joinGame(params);
-                case "quit" -> "quit";
+                case "logout" -> "logout";
                 default -> help();
             };
         } catch (Exception ex) {
@@ -52,6 +52,11 @@ public class MainClient implements Client {
     @Override
     public State getState() {
         return state;
+    }
+
+    @Override
+    public void setState(State state) {
+        this.state = state;
     }
 
     private String joinGame(String... params) {
