@@ -133,12 +133,8 @@ public class MainClient implements Client {
                 // find Game ID
                 GameData[] games = server.listGames(token);
 
-                if (games.length == 0) {
-                    return String.format("Game does not exist", params[0]);
-                }
-
                 try {
-                    if (Integer.parseInt(params[0])-1 > games.length) {
+                    if (Integer.parseInt(params[0])-1 > games.length || games.length == 0) {
                         return String.format("Game does not exist", params[0]);
                     }
                 } catch (NumberFormatException ex) {
