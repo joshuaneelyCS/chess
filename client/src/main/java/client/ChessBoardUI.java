@@ -44,11 +44,18 @@ public class ChessBoardUI {
         String[] headers = { "a", "b", "c", "d", "e", "f", "g", "h" };
 
         out.print(EMPTY.repeat(1));
-        for (int boardCol = 0; boardCol < 8; ++boardCol) {
-            printHeaderText(out, headers[boardCol]);
-        }
-        out.print(EMPTY.repeat(1));
 
+        if ("BLACK".equals(playerColor)) {
+            for (int boardCol = headers.length - 1; boardCol >= 0; --boardCol) {
+                printHeaderText(out, headers[boardCol]);
+            }
+        } else {
+            for (int boardCol = 0; boardCol < headers.length; ++boardCol) {
+                printHeaderText(out, headers[boardCol]);
+            }
+        }
+
+        out.print(EMPTY.repeat(1));
         out.println();
     }
 
@@ -65,11 +72,16 @@ public class ChessBoardUI {
 
     private static void drawChessBoard(PrintStream out, String playerColor, ChessBoard board) {
 
-        String[] column = { "8", "7", "6", "5", "4", "3", "2", "1" };
+        String[] rows = "BLACK".equals(playerColor)
+                ? new String[] { "1", "2", "3", "4", "5", "6", "7", "8" }
+                : new String[] { "8", "7", "6", "5", "4", "3", "2", "1" };
 
-        for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
+        for (int i = 0; i < BOARD_SIZE_IN_SQUARES; ++i) {
+            int boardRow = "WHITE".equals(playerColor)
+                    ? BOARD_SIZE_IN_SQUARES - 1 - i  // Go from 7 to 0 for BLACK
+                    : i;                             // Go from 0 to 7 for WHITE
 
-            drawRowOfSquares(out, column[boardRow], board.getBoard()[boardRow], playerColor);
+            drawRowOfSquares(out, rows[i], board.getBoard()[boardRow], playerColor);
             setWhite(out);
         }
     }
@@ -96,55 +108,59 @@ public class ChessBoardUI {
             tileColor = SET_BG_COLOR_BLACK;
         }
 
-        for (int squareRow = 0; squareRow < BOARD_SIZE_IN_SQUARES; ++squareRow) {
-            out.print(tileColor);
-
-            ChessPiece piece = row[squareRow];
-            char pieceSymbol;
-            if (piece != null) {
-                if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                    out.print(SET_TEXT_COLOR_RED);
-                } else {
-                    out.print(SET_TEXT_COLOR_BLUE);
-                }
-
-                if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
-                    pieceSymbol = 'R';
-                } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                    pieceSymbol = 'K';
-                } else if (piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
-                    pieceSymbol = 'B';
-                } else if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
-                    pieceSymbol = 'Q';
-                } else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-                    pieceSymbol = 'K';
-                } else {
-                    pieceSymbol = 'P';
-                }
-            } else {
-                pieceSymbol = ' ';
+        if ("BLACK".equals(playerColor)) {
+            for (int squareRow = BOARD_SIZE_IN_SQUARES - 1; squareRow >= 0; --squareRow) {
+                tileColor = drawSquare(out, row, tileColor, squareRow);
             }
-
-
-            out.print(" ");
-            out.print(pieceSymbol);
-            out.print(" ");
-
-            if (tileColor.equals(SET_BG_COLOR_WHITE)) {
-                tileColor = SET_BG_COLOR_BLACK;
-            } else {
-                tileColor = SET_BG_COLOR_WHITE;
+        } else {
+            for (int squareRow = 0; squareRow < BOARD_SIZE_IN_SQUARES; ++squareRow) {
+                tileColor = drawSquare(out, row, tileColor, squareRow);
             }
-
-            out.print(SET_TEXT_COLOR_BLACK);
-            out.print(SET_BG_COLOR_WHITE);
         }
 
         out.print(" ");
         out.print(rowNum);
         out.print(" \n");
+    }
 
+    private static String drawSquare(PrintStream out, ChessPiece[] row, String tileColor, int squareRow) {
+        out.print(tileColor);
 
+        ChessPiece piece = row[squareRow];
+        char pieceSymbol = getPieceSymbol(piece, out);
+
+        out.print(" ");
+        out.print(pieceSymbol);
+        out.print(" ");
+
+        tileColor = toggleTileColor(tileColor);
+
+        out.print(SET_TEXT_COLOR_BLACK);
+        out.print(SET_BG_COLOR_WHITE);
+        return tileColor;
+    }
+
+    private static char getPieceSymbol(ChessPiece piece, PrintStream out) {
+        if (piece == null) return ' ';
+
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            out.print(SET_TEXT_COLOR_RED);
+        } else {
+            out.print(SET_TEXT_COLOR_BLUE);
+        }
+
+        return switch (piece.getPieceType()) {
+            case ROOK -> 'R';
+            case KNIGHT -> 'K';
+            case BISHOP -> 'B';
+            case QUEEN -> 'Q';
+            case KING -> 'K';
+            case PAWN -> 'P';
+        };
+    }
+
+    private static String toggleTileColor(String current) {
+        return current.equals(SET_BG_COLOR_WHITE) ? SET_BG_COLOR_BLACK : SET_BG_COLOR_WHITE;
     }
 
     private static void drawHorizontalLine(PrintStream out) {
