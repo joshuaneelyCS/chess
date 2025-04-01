@@ -4,9 +4,12 @@ import com.google.gson.Gson;
 import model.*;
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 public class ServerFacade {
     private final String serverUrl;
+    private static final Gson GSON = new Gson();
 
     public ServerFacade(String serverUrl) {
         this.serverUrl = serverUrl;
@@ -74,11 +77,24 @@ public class ServerFacade {
 
             writeBody(request, http);
             http.connect();
-            return readBody(http, responseClass);
+
+            int statusCode = http.getResponseCode();
+            if (statusCode == 200) {
+                return readBody(http, responseClass);
+            } else {
+                // Read error message from error stream
+                InputStream errorStream = http.getErrorStream();
+                String errorJson = new String(errorStream.readAllBytes(), StandardCharsets.UTF_8);
+
+                // Assuming the error is in {"message": "..."}
+                String message = GSON.fromJson(errorJson, Map.class).get("message").toString();
+                throw new Exception(message);
+            }
         } catch (Exception ex) {
             throw ex;
         }
     }
+
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {

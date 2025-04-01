@@ -66,9 +66,10 @@ public class LoginClient implements Client {
                 AuthData authData = server.register(params[0], params[1], params[2]);
                 token = authData.getAuthToken();
                 state = State.LOGGED_IN;
-                return String.format("Successfully registered. User is logged in");
+                return "Successfully registered. User is logged in";
             } catch (Exception ex) {
-                throw new Exception("User already exists! Please try a different username");
+                // Display the server message
+                throw new Exception(ex.getMessage());
             }
         }
         throw new Exception("Expected: <USERNAME> <PASSWORD> <EMAIL>");

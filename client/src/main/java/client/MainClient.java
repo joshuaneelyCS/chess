@@ -103,10 +103,14 @@ public class MainClient implements Client {
                 params[1] = params[1].toUpperCase();
                 playerColor = params[1];
 
+                if (!params[1].equals("WHITE") && !params[1].equals("BLACK")) {
+                    return String.format("Invalid Player Color '%s'. Please use WHITE or BLACK", params[1]);
+                }
+
                 // find Game ID
                 GameData[] games = server.listGames(token);
                 try {
-                    if (Integer.parseInt(params[0])-1 > games.length) {
+                    if (Integer.parseInt(params[0])-1 > games.length || Integer.parseInt(params[0])-1 < 0) {
                         return String.format("Game does not exist. Please create a new game", params[0]);
                     }
                 } catch (NumberFormatException ex) {
@@ -134,7 +138,8 @@ public class MainClient implements Client {
                 GameData[] games = server.listGames(token);
 
                 try {
-                    if (Integer.parseInt(params[0])-1 > games.length || games.length == 0) {
+                    if (Integer.parseInt(params[0])-1 > games.length ||
+                            Integer.parseInt(params[0])-1 < 0 || games.length == 0) {
                         return String.format("Game does not exist", params[0]);
                     }
                 } catch (NumberFormatException ex) {
