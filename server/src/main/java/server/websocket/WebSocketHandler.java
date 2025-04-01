@@ -1,5 +1,6 @@
 package server.websocket;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -18,36 +19,35 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
-        switch (action.getCommandType()) {
-            case CONNECT -> enter(action.visitorName(), session);
-            case MAKE_MOVE -> exit(action.visitorName());
-            case LEAVE -> exit(action.visitorName());
-            case RESIGN -> exit(action.visitorName());
+        UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+        switch (command.getCommandType()) {
+            case CONNECT -> connect(command.getAuthToken(), session);
+            case MAKE_MOVE -> makeMove(command.getAuthToken());
+            case LEAVE -> leave(command.getAuthToken());
+            case RESIGN -> resign(command.getAuthToken());
         }
     }
 
-    private void enter(String visitorName, Session session) throws IOException {
-        connections.add(visitorName, session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new Notification(Notification.Type.ARRIVAL, message);
-        connections.broadcast(visitorName, notification);
+    // This function broadcasts to users joined on a game
+    private void connect(String authToken, Session session) throws IOException {
+        connections.add(authToken, session);
+        var message = String.format("%s joined the game", authToken);
+        var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        connections.broadcast(authToken, serverMessage);
     }
 
-    private void exit(String visitorName) throws IOException {
+    private void makeMove(String authToken) throws IOException {
+        connections.remove(authToken);
+        var message = String.format("%s moved", authToken);
+        var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        connections.broadcast(authToken, serverMessage);
+    }
+
+   private void leave(String visitorName) throws IOException {
         connections.remove(visitorName);
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new Notification(Notification.Type.DEPARTURE, message);
-        connections.broadcast(visitorName, notification);
-    }
+   }
 
-    public void makeNoise(String petName, String sound) throws ResponseException {
-        try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new Notification(Notification.Type.NOISE, message);
-            connections.broadcast("", notification);
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
-        }
+    private void resign(String visitorName) throws IOException {
+        connections.remove(visitorName);
     }
 }
