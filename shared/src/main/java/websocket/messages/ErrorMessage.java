@@ -1,5 +1,5 @@
 package websocket.messages;
 
-public class Error  {
+public class ErrorMessage {
 
 }
