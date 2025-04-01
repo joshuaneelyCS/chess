@@ -6,6 +6,7 @@ import dataaccess.interfaces.DAO;
 import dataaccess.memoryimplementation.MemoryDAO;
 import server.handlers.GameHandler;
 import server.handlers.UserHandler;
+import server.websocket.WebSocketHandler;
 import service.GameService;
 import service.UserService;
 import spark.*;
@@ -25,6 +26,8 @@ public class Server {
             dao = new MemoryDAO();
         }
 
+        WebSocketHandler webSocketHandler = new WebSocketHandler();
+
         UserService userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
         UserHandler userHandler = new UserHandler(userService);
 
@@ -33,7 +36,7 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         // Clears the application
-        // Spark.delete("/db", (request, response) -> true);
+        Spark.webSocket("/ws", webSocketHandler);
         Spark.post("/user", userHandler.createUser());
         Spark.post("/session", userHandler.login());
         Spark.delete("/session", userHandler.logout());

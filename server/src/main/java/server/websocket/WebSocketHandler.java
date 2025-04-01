@@ -11,7 +11,6 @@ import websocket.messages.*;
 import java.io.IOException;
 import java.util.Timer;
 
-
 @WebSocket
 public class WebSocketHandler {
 
@@ -32,22 +31,28 @@ public class WebSocketHandler {
     private void connect(String authToken, Session session) throws IOException {
         connections.add(authToken, session);
         var message = String.format("%s joined the game", authToken);
-        var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, message);
         connections.broadcast(authToken, serverMessage);
     }
 
     private void makeMove(String authToken) throws IOException {
         connections.remove(authToken);
         var message = String.format("%s moved", authToken);
-        var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, message);
         connections.broadcast(authToken, serverMessage);
     }
 
-   private void leave(String visitorName) throws IOException {
-        connections.remove(visitorName);
+   private void leave(String authToken) throws IOException {
+       var message = String.format("%s left the game.", authToken);
+       var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+       connections.broadcast(authToken, serverMessage);
+       connections.remove(authToken);
    }
 
-    private void resign(String visitorName) throws IOException {
-        connections.remove(visitorName);
+    private void resign(String authToken) throws IOException {
+        var message = String.format("%s resigned. {PLAYER} won the game", authToken);
+        var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(authToken, serverMessage);
+        connections.remove(authToken);
     }
 }
