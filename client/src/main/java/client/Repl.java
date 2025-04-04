@@ -1,18 +1,25 @@
 package client;
 
+import chess.ChessGame;
+import client.websocket.NotificationHandler;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
+
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private final LoginClient loginClient;
     private final MainClient mainClient;
     private final GameClient gameClient;
 
-    public Repl(String serverUrl) {
+    public Repl(String serverUrl)  {
         loginClient = new LoginClient(serverUrl);
         mainClient = new MainClient(serverUrl);
-        gameClient = new GameClient(serverUrl);
+        gameClient = new GameClient(serverUrl, this);
     }
 
     public void run() {
@@ -68,7 +75,7 @@ public class Repl {
 
         gameClient.setGame(gameID, playerColor);
 
-        while (!result.equals("quit") && !result.equals("logout")) {
+        while (!result.equals("resign") && !result.equals("leave")) {
             result = runClient(scanner, gameClient, result);
         }
 
@@ -91,5 +98,23 @@ public class Repl {
 
     private void printPrompt() {
         System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
+    }
+
+    @Override
+    public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()) {
+            case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
+            case ERROR -> displayError(((ErrorMessage) message).getMessage());
+            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
+        }
+    }
+
+    private void loadGame(ChessGame game) {
+    }
+
+    private void displayError(String message) {
+    }
+
+    private void displayNotification(String message) {
     }
 }
