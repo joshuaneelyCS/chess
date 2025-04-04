@@ -21,6 +21,7 @@ public class WebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+
         switch (command.getCommandType()) {
             case CONNECT -> connect(command.getAuthToken(), session);
             case MAKE_MOVE -> {

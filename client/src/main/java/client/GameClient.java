@@ -1,11 +1,19 @@
 package client;
 
 import chess.ChessBoard;
+import chess.ChessGame;
+import client.websocket.NotificationHandler;
 import server.ServerFacade;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
 
-public class GameClient implements Client {
+import static websocket.messages.ServerMessage.ServerMessageType.*;
+
+public class GameClient implements Client, NotificationHandler {
 
     private final String serverUrl;
     private final ServerFacade server;
@@ -63,5 +71,23 @@ public class GameClient implements Client {
         ChessBoard board = new ChessBoard();
         board.resetBoard();
         ChessBoardUI.drawBoard(gameID, playerColor, board);
+    }
+
+    @Override
+    public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()) {
+            case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
+            case ERROR -> displayError(((ErrorMessage) message).getMessage());
+            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
+        }
+    }
+
+    private void loadGame(ChessGame game) {
+    }
+
+    private void displayError(String message) {
+    }
+
+    private void displayNotification(String message) {
     }
 }
