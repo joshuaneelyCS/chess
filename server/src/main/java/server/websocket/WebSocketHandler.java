@@ -23,11 +23,15 @@ public class WebSocketHandler {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
 
         switch (command.getCommandType()) {
-            case CONNECT -> connect(command.getAuthToken(), session);
+            case CONNECT -> {
+                // Re-parse as MakeMove to access the move field
+                ConnectCommand connectCommand = new Gson().fromJson(message, ConnectCommand.class);
+                connect(connectCommand.getAuthToken(), connectCommand.getUsername());
+            }
             case MAKE_MOVE -> {
                 // Re-parse as MakeMove to access the move field
                 MakeMoveCommand moveCommand = GSON.fromJson(message, MakeMoveCommand.class);
-                makeMove(moveCommand.getAuthToken(), moveCommand.getMove());
+                makeMove(moveCommand.getAuthToken(), moveCommand.getMove(), moveCommand.getUsername());
             }
             case LEAVE -> leave(command.getAuthToken());
             case RESIGN -> resign(command.getAuthToken());
@@ -35,17 +39,18 @@ public class WebSocketHandler {
     }
 
     // This function broadcasts to users joined on a game
-    private void connect(String authToken, Session session) throws IOException {
+    private void connect(String authToken, String username) throws IOException {
         connections.add(authToken, session);
         ChessGame game = new ChessGame();
-        var serverMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+        String message = username + "joined the game";
+        var serverMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game, message);
         connections.broadcast(authToken, serverMessage);
     }
 
-    private void makeMove(String authToken, ChessMove move) throws IOException {
-        connections.remove(authToken);
+    private void makeMove(String authToken, String username, ChessMove move) throws IOException {
         ChessGame game = new ChessGame();
-        var serverMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+        String message = username + "moved" + move.toString();
+        var serverMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game, message);
         connections.broadcast(authToken, serverMessage);
     }
 

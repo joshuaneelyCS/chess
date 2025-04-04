@@ -20,10 +20,12 @@ public class GameClient implements Client {
     private final ServerFacade server;
     private State state = State.LOGGED_OUT;
     private final NotificationHandler notificationHandler;
-    private String token;
+    private ChessGame localGame;
     private String playerColor;
     private WebSocketFacade ws;
     private int gameID;
+    private String token;
+    private String username;
 
     public GameClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
@@ -36,8 +38,8 @@ public class GameClient implements Client {
         return """
                 Options:
                 Redraw chess board: "redraw"
-                Show all legal moves: "legal"
-                Make a move: "move"
+                Show all legal moves: "legal" <square of piece>
+                Make a move: "move" <square of piece> <destination square>
                 Leave: "leave"
                 Resign: "resign"
                 Show this message: "help"
@@ -52,8 +54,8 @@ public class GameClient implements Client {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "redraw" -> drawBoard();
-                case "legal" -> drawLegalMoves();
-                case "move" -> makeMove();
+                case "legal" -> drawLegalMoves(params);
+                case "move" -> makeMove(params);
                 case "leave" -> leave();
                 case "resign" -> resign();
                 case "quit" -> "quit";
@@ -68,15 +70,22 @@ public class GameClient implements Client {
         return "";
     }
 
-    private String leave() {
+    private String leave() throws Exception {
+        ws.leaveGame(token, gameID);
+        return String.format("You left the game\n");
+    }
+
+    private String makeMove(String... params) {
+        // Check if legal move
+        // Update the local game
+        // Send the game to the websocket
         return "";
     }
 
-    private String makeMove() {
-        return "";
-    }
-
-    private String drawLegalMoves() {
+    private String drawLegalMoves(String... params) {
+        // get the piece of the local game
+        // get its valid moves
+        // redraw the board with options to distinguish valid moves
         return "";
     }
 
@@ -93,6 +102,23 @@ public class GameClient implements Client {
     public void setGame(int gameID, String playerColor) {
         this.gameID = gameID;
         this.playerColor = playerColor;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void beginSession() throws Exception {
+        ws = new WebSocketFacade(serverUrl,  notificationHandler);
+        if (gameID == 0) {
+            throw new Exception("You need to specify a game ID");
+        }
+        String message = username + " has joined the game";
+        ws.joinGame(token, gameID, message);
     }
 
     public String drawBoard() {

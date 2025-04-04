@@ -2,12 +2,16 @@ package client.websocket;
 
 import com.google.gson.Gson;
 import websocket.commands.ConnectCommand;
+import websocket.commands.LeaveCommand;
 import websocket.messages.NotificationMessage;
 
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import static websocket.commands.UserGameCommand.CommandType.CONNECT;
+import static websocket.commands.UserGameCommand.CommandType.LEAVE;
 
 public class WebSocketFacade extends Endpoint {
 
@@ -39,8 +43,22 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void joinGame(String username) {
+    public void joinGame(String token, int gameID, String message) {
+        try {
+            var command = new ConnectCommand(CONNECT, token, gameID, message);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
+            throw new RuntimeException("Error sending connect command", ex);
+        }
+    }
 
+    public void leaveGame(String token, int gameID) {
+        try {
+            var command = new LeaveCommand(LEAVE, token, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
+            throw new RuntimeException("Error: Check catch in WebSocketFacade");
+        }
     }
 
 }

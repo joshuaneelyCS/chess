@@ -9,6 +9,7 @@ import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 
+import static java.awt.Color.RED;
 import static ui.EscapeSequences.*;
 
 public class Repl implements NotificationHandler {
@@ -42,7 +43,7 @@ public class Repl implements NotificationHandler {
             }
 
             mainClient.setToken(token);
-            result = handleLoggedIn(scanner, result);
+            result = handleLoggedIn(scanner, result, token);
 
             loginClient.logout(token);
             mainClient.setToken(null);
@@ -50,32 +51,41 @@ public class Repl implements NotificationHandler {
         }
     }
 
-    private String handleLoggedIn(Scanner scanner, String result) {
+    private String handleLoggedIn(Scanner scanner, String result, String token) {
         while (!result.equals("logout")) {
             if (mainClient.getState() != State.IN_GAME) {
                 result = runClient(scanner, mainClient, result);
                 continue;
             }
 
-            result = handleGameSession(scanner, result);
+            result = handleGameSession(scanner, result, token);
             mainClient.setState(State.OUT_GAME);
             System.out.print(mainClient.help());
         }
         return result;
     }
 
-    private String handleGameSession(Scanner scanner, String result) {
+    private String handleGameSession(Scanner scanner, String result, String token) {
         int gameID = mainClient.getGameID();
         String playerColor = mainClient.getPlayerColor();
 
         if (gameID == 0) {
-            System.out.println("Sorry. Something went wrong joining the game");
+            System.out.println("Sorry. Game ID not found");
             return result;
         }
 
-        gameClient.setGame(gameID, playerColor);
 
-        while (!result.equals("resign") && !result.equals("leave")) {
+        gameClient.setGame(gameID, playerColor);
+        gameClient.setToken(token);
+        gameClient.setUsername(loginClient.getUsername());
+        try {
+            gameClient.beginSession();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            result = "You left the game";
+        }
+
+        while (!result.equals("You left the game\n")) {
             result = runClient(scanner, gameClient, result);
         }
 
@@ -116,5 +126,7 @@ public class Repl implements NotificationHandler {
     }
 
     private void displayNotification(String message) {
+        System.out.println(RED + message);
+        printPrompt();
     }
 }
