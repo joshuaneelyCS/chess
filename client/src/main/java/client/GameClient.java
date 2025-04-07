@@ -25,7 +25,6 @@ public class GameClient implements Client {
     private WebSocketFacade ws;
     private int gameID;
     private String token;
-    private String username;
 
     public GameClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
@@ -108,17 +107,13 @@ public class GameClient implements Client {
         this.token = token;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public void beginSession() throws Exception {
         ws = new WebSocketFacade(serverUrl,  notificationHandler);
         if (gameID == 0) {
             throw new Exception("You need to specify a game ID");
         }
-        String message = username + " has joined the game";
-        ws.joinGame(token, gameID, message);
+
+        ws.joinGame(token, gameID);
     }
 
     public String drawBoard() {

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
 import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -31,21 +32,23 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
-                    notificationHandler.notify(notification);
+                    System.out.println("Message received from socket");
+                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+                    notificationHandler.notify(serverMessage);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new Exception("Error: Check catch in WebSocketFacade");
         }
     }
+
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void joinGame(String token, int gameID, String message) {
+    public void joinGame(String token, int gameID) {
         try {
-            var command = new ConnectCommand(CONNECT, token, gameID, message);
+            var command = new ConnectCommand(CONNECT, token, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new RuntimeException("Error sending connect command", ex);

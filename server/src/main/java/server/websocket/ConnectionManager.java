@@ -1,44 +1,82 @@
 package server.websocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
+
+    @Override
+    public String toString() {
+        return "ConnectionManager{" +
+                "games=" + games +
+                '}';
+    }
+
+    public final ConcurrentHashMap<Integer, ArrayList<Connection>> games = new ConcurrentHashMap<>();
 
     // Adds a connection to the WebSocket
-    public void add(String authToken, Session session) {
+    public void add(int gameID, String authToken, Session session) {
         var connection = new Connection(authToken, session);
-        connections.put(authToken, connection);
+
+        // Use computeIfAbsent to avoid overwriting existing lists
+        games.computeIfAbsent(gameID, k -> new ArrayList<>()).add(connection);
     }
 
     // Removes a connection from the WebSocket
     public void remove(String authToken) {
-        connections.remove(authToken);
+
+        for (var connections : games.values()) {
+            for (var connection : connections) {
+                if (connection.authToken.equals(authToken)) {
+                    connections.remove(connection);
+                    return;
+                }
+            }
+        }
     }
 
     // Broadcasts to all connections to the WebSocket
     public void broadcast(String excludeAuthToken, ServerMessage serverMessage) throws IOException {
-        var removeList = new ArrayList<Connection>();
-        for (var c : connections.values()) {
-            if (c.session.isOpen()) {
+        Integer gameID = null;
 
-                // Excludes the user's token which made the broadcast
-                if (!c.authToken.equals(excludeAuthToken)) {
-                    c.send(serverMessage.toString());
+        // Step 1: Find the gameID for the given authToken
+        for (var entry : games.entrySet()) {
+            for (var connection : entry.getValue()) {
+                if (connection.authToken.equals(excludeAuthToken)) {
+                    gameID = entry.getKey();
+                    break;
                 }
-            } else {
-                removeList.add(c);
+            }
+            if (gameID != null) break;
+        }
+
+        if (gameID == null) { return; } // AuthToken not found in any game
+
+        // Step 2: Get all connections for that gameID
+        var connections = games.get(gameID);
+        if (connections == null) { return; }
+
+        List<Connection> toRemove = new ArrayList<>();
+
+        // Step 3: Send the message to everyone except the sender
+        for (var connection : connections) {
+            if (!connection.authToken.equals(excludeAuthToken)) {
+                if (connection.session.isOpen()) {
+                    connection.send(serverMessage);
+                } else {
+                    toRemove.add(connection); // Mark closed connections for removal
+                }
             }
         }
 
-        // Clean up any connections that were left open.
-        for (var c : removeList) {
-            connections.remove(c.authToken);
-        }
+        // Step 4: Remove any closed connections
+        connections.removeAll(toRemove);
+
     }
 }

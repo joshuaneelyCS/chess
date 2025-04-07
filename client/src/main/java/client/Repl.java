@@ -74,10 +74,9 @@ public class Repl implements NotificationHandler {
             return result;
         }
 
-
         gameClient.setGame(gameID, playerColor);
         gameClient.setToken(token);
-        gameClient.setUsername(loginClient.getUsername());
+
         try {
             gameClient.beginSession();
         } catch (Exception e) {
@@ -120,6 +119,7 @@ public class Repl implements NotificationHandler {
     }
 
     private void loadGame(ChessGame game) {
+        System.out.println("Loading game... Received Server Message");
     }
 
     private void displayError(String message) {
