@@ -111,15 +111,19 @@ public class Repl implements NotificationHandler {
 
     @Override
     public void notify(ServerMessage message) {
-        switch (message.getServerMessageType()) {
-            case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
-            case ERROR -> displayError(((ErrorMessage) message).getMessage());
-            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
+        try {
+            switch (message.getServerMessageType()) {
+                case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
+                case ERROR -> displayError(((ErrorMessage) message).getMessage());
+                case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
     private void loadGame(ChessGame game) {
-        System.out.println("Loading game... Received Server Message");
+        System.out.println("Loading game... Received Server Message\n");
     }
 
     private void displayError(String message) {

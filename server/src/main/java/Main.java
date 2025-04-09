@@ -17,7 +17,7 @@ public class Main {
         }
 
         var server = new Server();
-        server.run(8080);
+        server.run(8081);
         System.out.println("♕ 240 Chess Server: " + piece);
     }
 }

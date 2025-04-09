@@ -1,8 +1,12 @@
 package client.websocket;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
@@ -32,8 +36,20 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    System.out.println("Message received from socket");
-                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+
+                    // Get the type
+                    JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
+                    String type = jsonObject.get("serverMessageType").getAsString();
+
+                    // Create a message depending on the type
+                    ServerMessage serverMessage;
+                    switch (ServerMessage.ServerMessageType.valueOf(type)) {
+                        case NOTIFICATION -> serverMessage = new Gson().fromJson(message, NotificationMessage.class);
+                        case ERROR -> serverMessage = new Gson().fromJson(message, ErrorMessage.class);
+                        case LOAD_GAME -> serverMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                        default -> throw new IllegalArgumentException("Unknown server message type: " + type);
+                    }
+
                     notificationHandler.notify(serverMessage);
                 }
             });
@@ -49,7 +65,8 @@ public class WebSocketFacade extends Endpoint {
     public void joinGame(String token, int gameID) {
         try {
             var command = new ConnectCommand(CONNECT, token, gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+            var toSend = new Gson().toJson(command);
+            this.session.getBasicRemote().sendText(toSend);
         } catch (IOException ex) {
             throw new RuntimeException("Error sending connect command", ex);
         }
