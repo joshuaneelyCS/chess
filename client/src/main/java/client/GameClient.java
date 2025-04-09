@@ -62,7 +62,8 @@ public class GameClient implements Client {
     }
 
     private String resign() {
-        return "";
+        ws.resignGame(token, gameID);
+        return "You have resigned the game. Your opponent wins.";
     }
 
     private String leave() throws Exception {
@@ -104,9 +105,12 @@ public class GameClient implements Client {
     }
 
     private String drawLegalMoves(String... params) {
-        // get the piece of the local game
         // get its valid moves
+        int[] square = parseMove(params[0]);
+        Collection<ChessMove> moves = clientGame.validMoves(new ChessPosition(square[0], square[1]));
+
         // redraw the board with options to distinguish valid moves
+        ChessBoardUI.drawBoard(gameID, playerColor, clientGame.getBoard(), moves);
         return "";
     }
 
@@ -144,7 +148,7 @@ public class GameClient implements Client {
     }
 
     public String drawBoard() {
-        ChessBoardUI.drawBoard(gameID, playerColor, clientGame.getBoard());
+        ChessBoardUI.drawBoard(gameID, playerColor, clientGame.getBoard(), null);
         return "";
     }
 }

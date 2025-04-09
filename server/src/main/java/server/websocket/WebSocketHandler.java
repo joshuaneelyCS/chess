@@ -49,7 +49,7 @@ public class WebSocketHandler {
                 makeMove(moveCommand.getAuthToken(), moveCommand.getGameID(), moveCommand.getMove());
             }
             case LEAVE -> leave(command.getAuthToken());
-            case RESIGN -> resign(command.getAuthToken());
+            case RESIGN -> resign(command.getAuthToken(), command.getGameID());
         }
     }
 
@@ -136,8 +136,17 @@ public class WebSocketHandler {
        connections.remove(authToken);
    }
 
-    private void resign(String authToken) throws IOException {
-        var message = String.format("%s resigned. {PLAYER} won the game", getUsername(authToken));
+    private void resign(String authToken, int gameID) throws IOException {
+        validateGame(gameID);
+        String role = getPlayerRole(getUsername(authToken), gameID);
+
+        if (role.equals("WHITE")) {
+            role = "BLACK";
+        } else if (role.equals("BLACK")) {
+            role = "WHITE";
+        }
+
+        var message = String.format("%s resigned. %s won the game", getUsername(authToken), role);
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(authToken, serverMessage, true);
         connections.remove(authToken);
