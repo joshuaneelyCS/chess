@@ -145,7 +145,6 @@ public class ChessGame implements Cloneable{
             throw new InvalidMoveException("Not your turn!");
         }
 
-
         var validMovesList = validMoves(move.getStartPosition());
 
         // Checks to see if the move is valid

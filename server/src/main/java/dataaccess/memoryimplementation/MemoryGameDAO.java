@@ -1,5 +1,6 @@
 package dataaccess.memoryimplementation;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.interfaces.GameDAO;
 import model.GameData;
@@ -29,6 +30,15 @@ public class MemoryGameDAO implements GameDAO {
             throw new DataAccessException("Game with ID " + id + " not found");
         }
         return games.get(id);
+    }
+
+    @Override
+    public void setGame(int gameID, ChessGame game) throws DataAccessException {
+        for (GameData gameData : games.values()) {
+            if (gameData.getGameID() == gameID) {
+                gameData.setGame(game);
+            }
+        }
     }
 
     @Override

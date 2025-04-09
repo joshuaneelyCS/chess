@@ -1,26 +1,37 @@
 package server.websocket;
 
-import chess.ChessGame;
-import chess.ChessMove;
+import chess.*;
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import dataaccess.interfaces.AuthDAO;
 import dataaccess.interfaces.UserDAO;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import service.GameService;
+import service.UserService;
 import websocket.commands.*;
 import websocket.messages.*;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebSocket
 public class WebSocketHandler {
 
     private static final Gson GSON = new Gson();
+    private final GameService gameService;
+    private final UserService userService;
 
     private final ConnectionManager connections = new ConnectionManager();
+
+    public WebSocketHandler(GameService gameService, UserService userService) {
+        this.gameService = gameService;
+        this.userService = userService;
+    }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
@@ -35,7 +46,7 @@ public class WebSocketHandler {
             case MAKE_MOVE -> {
                 // Re-parse as MakeMove to access the move field
                 MakeMoveCommand moveCommand = GSON.fromJson(message, MakeMoveCommand.class);
-                makeMove(moveCommand.getAuthToken(), moveCommand.getUsername(), moveCommand.getMove());
+                makeMove(moveCommand.getAuthToken(), moveCommand.getGameID(), moveCommand.getMove());
             }
             case LEAVE -> leave(command.getAuthToken());
             case RESIGN -> resign(command.getAuthToken());
@@ -49,37 +60,124 @@ public class WebSocketHandler {
 
     // This function broadcasts to users joined on a game
     private void connect(String authToken, int gameID, Session session) throws IOException {
+
+        validateGame(gameID);
+        var username = getUsername(authToken);
+        String role = getPlayerRole(username, gameID);
+
         connections.add(gameID, authToken, session);
-        System.out.println("\n\nConnections: " + connections);
-        ChessGame game = new ChessGame();
-        // access the username via UserDAO
+        System.out.println("\nConnections: " + connections);
+        ChessGame game = getGame(gameID);
 
         var clientMessage = new LoadGameMessage(game);
         session.getRemote().sendString(new Gson().toJson(clientMessage));
 
-        String message = "User joined the game";
+        var message = String.format("%s joined the game as %s.", username, role);
         var serverMessage = new NotificationMessage(message);
-        connections.broadcast(authToken, serverMessage);
+        connections.broadcast(authToken, serverMessage, true);
     }
 
-    private void makeMove(String authToken, String username, ChessMove move) throws IOException {
-        ChessGame game = new ChessGame();
-        String message = username + "moved" + move.toString();
-        var serverMessage = new LoadGameMessage(game);
-        // connections.broadcast(authToken, serverMessage);
+    private void makeMove(String authToken, int gameID, ChessMove move) throws IOException {
+
+        validateGame(gameID);
+        var username = getUsername(authToken);
+        String role = getPlayerRole(username, gameID);
+        ChessGame.TeamColor teamTurn;
+
+        // Gets the team color
+        if (role.equals("WHITE")) {
+            teamTurn = ChessGame.TeamColor.WHITE;
+        } else if (role.equals("BLACK")) {
+            teamTurn = ChessGame.TeamColor.BLACK;
+        } else {
+            throw new IOException("You are not allowed to make a move to. Observe only.");
+        }
+
+        ChessGame game = getGame(gameID);
+        // Ensures that it is the player's turn
+        if (game.getTeamTurn() != teamTurn) {
+            throw new IOException("It is not you turn to move. Please wait and try again.");
+        }
+
+        ChessPiece piece = game.getBoard().getPiece(move.getStartPosition());
+
+        // Updates the game in the database
+        try {
+            game.makeMove(move);
+            gameService.setGame(gameID, game);
+
+        } catch (InvalidMoveException e) {
+            throw new IOException(e);
+        } catch (DataAccessException e) {
+            throw new IOException(e);
+        }
+
+        var gameMessage = new LoadGameMessage(game);
+        connections.broadcast(authToken, gameMessage, false);
+
+        String message = username + " moved " +
+                piece.getPieceType().toString() + " " +
+                parsePosition(move.getStartPosition()) + " to " + parsePosition(move.getEndPosition());
+        var notificationMessage = new NotificationMessage(message);
+        connections.broadcast(authToken, notificationMessage, true);
+
+    }
+
+    private String parsePosition(ChessPosition position) {
+        char columnChar = (char) ('A' + position.getColumn() - 1);
+        int rowNumber = position.getRow();
+        return columnChar + Integer.toString(rowNumber);
     }
 
    private void leave(String authToken) throws IOException {
-       var message = String.format("%s left the game.", authToken);
+       var message = String.format("%s left the game.", getUsername(authToken));
        var serverMessage = new NotificationMessage(message);
-       connections.broadcast(authToken, serverMessage);
+       connections.broadcast(authToken, serverMessage, true);
        connections.remove(authToken);
    }
 
     private void resign(String authToken) throws IOException {
-        var message = String.format("%s resigned. {PLAYER} won the game", authToken);
+        var message = String.format("%s resigned. {PLAYER} won the game", getUsername(authToken));
         var serverMessage = new NotificationMessage(message);
-        // connections.broadcast(authToken, serverMessage);
+        connections.broadcast(authToken, serverMessage, true);
         connections.remove(authToken);
+    }
+
+    private String getUsername(String authToken) {
+        try {
+            return gameService.getUsername(authToken);
+        } catch (DataAccessException e) {
+            return "Unknown User";
+        }
+    }
+
+    private void validateGame(int gameID) throws IOException {
+        try {
+            if (!gameService.validGame(gameID)) {
+                throw new IOException("Error: Game does not exist");
+            }
+        } catch (DataAccessException e) {
+            throw new IOException("Server error: " + e.getMessage());
+        }
+    }
+
+    private String getPlayerRole(String username, int gameID) throws IOException {
+        try {
+            String playerColor = gameService.getPlayerColor(username, gameID);
+            if (playerColor == null) {
+                return "an observer";
+            }
+            return playerColor;
+        } catch (DataAccessException e) {
+            throw new IOException("Server error: " + e.getMessage());
+        }
+    }
+
+    private ChessGame getGame(int gameID) throws IOException {
+        try {
+            return gameService.getGame(gameID);
+        } catch (DataAccessException e) {
+            throw new IOException("Server error: " + e.getMessage());
+        }
     }
 }

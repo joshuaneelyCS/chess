@@ -1,5 +1,6 @@
 package dataaccess.databaseimplementation;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.ResponseException;
@@ -91,6 +92,25 @@ public class DatabaseGameDAO implements GameDAO {
             return DatabaseHandler.GameDataHandler.resultSetToGameData(result);
         } catch (SQLException e) {
             throw new DataAccessException("Could not retrieve game data from database");
+        }
+    }
+
+    @Override
+    public void setGame(int gameID, ChessGame game) throws DataAccessException {
+        var statement = """
+        UPDATE games
+        SET chess_game = ?
+        WHERE game_id = ?
+        """;
+
+        try {
+            DatabaseManager.executeUpdate(
+                    statement,
+                    DatabaseHandler.GameDataHandler.convertGameToString(game),
+                    gameID
+            );
+        } catch (Exception e) {
+            throw new DataAccessException("Could not set game in database");
         }
     }
 

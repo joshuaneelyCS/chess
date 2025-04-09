@@ -9,7 +9,6 @@ import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 
-import static java.awt.Color.RED;
 import static ui.EscapeSequences.*;
 
 public class Repl implements NotificationHandler {
@@ -74,7 +73,7 @@ public class Repl implements NotificationHandler {
             return result;
         }
 
-        gameClient.setGame(gameID, playerColor);
+        gameClient.setGameInfo(gameID, playerColor);
         gameClient.setToken(token);
 
         try {
@@ -92,7 +91,9 @@ public class Repl implements NotificationHandler {
     }
 
     private String runClient(Scanner scanner, Client client, String result) {
-        printPrompt();
+        if (!(client instanceof GameClient)) {
+            printPrompt();
+        }
         String line = scanner.nextLine();
         try {
             result = client.eval(line);
@@ -123,14 +124,16 @@ public class Repl implements NotificationHandler {
     }
 
     private void loadGame(ChessGame game) {
-        System.out.println("Loading game... Received Server Message\n");
+        System.out.print("");
+        gameClient.loadLocalGame(game);
+        printPrompt();
     }
 
     private void displayError(String message) {
     }
 
     private void displayNotification(String message) {
-        System.out.println(RED + message);
+        System.out.println(message);
         printPrompt();
     }
 }

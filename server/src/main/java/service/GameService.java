@@ -57,10 +57,56 @@ public class GameService {
     }
 
     public void joinGame(JoinGameRequest req) throws DataAccessException, GameAlreadyTakenException, InvalidColorException {
-
-        String username = authDAO.getAuth(req.token).getUsername();
+        String username = getUsername(req.token);
         gameDAO.joinGame(req.gameID, req.playerColor, username);
+    }
 
+    public boolean validGame(int gameID) throws DataAccessException {
+        List<GameData> games = gameDAO.getAllGames();
+        for (GameData gameData : games) {
+            if (gameData.getGameID() == gameID) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getUsername(String token) throws DataAccessException {
+        return authDAO.getAuth(token).getUsername();
+    }
+
+    public String getPlayerColor(String username, int gameID) throws DataAccessException {
+        List<GameData> games = gameDAO.getAllGames();
+        if (games != null) {
+            for (GameData gameData : games) {
+                if (gameData.getGameID() == gameID) {
+                    if (username.equals(gameData.getWhiteUsername())) {
+                        return "WHITE";
+                    } else if (username.equals(gameData.getBlackUsername())) {
+                        return "BLACK";
+                    } else {
+                        return null;
+                    }
+                }
+            }
+            return null;
+        } else {
+            throw new DataAccessException("There were no games in database");
+        }
+    }
+
+    public ChessGame getGame(int gameID) throws DataAccessException {
+        List<GameData> games = gameDAO.getAllGames();
+        for (GameData gameData : games) {
+            if (gameData.getGameID() == gameID) {
+                return gameData.getGame();
+            }
+        }
+        return null;
+    }
+
+    public void setGame(int gameID, ChessGame game) throws DataAccessException {
+        gameDAO.setGame(gameID, game);
     }
 
     public void clearDatabase() throws DataAccessException {

@@ -35,6 +35,10 @@ public class GameData {
         return game;
     }
 
+    public void setGame(ChessGame game) {
+        this.game = game;
+    }
+
     public void setTeam(String playerColor, String username) throws GameAlreadyTakenException, InvalidColorException {
         if (playerColor == null) {
             throw new InvalidColorException("Error: Please enter a team color");

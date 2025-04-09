@@ -26,13 +26,13 @@ public class Server {
             dao = new MemoryDAO();
         }
 
-        WebSocketHandler webSocketHandler = new WebSocketHandler();
-
         UserService userService = new UserService(dao.getAuthDAO(), dao.getUserDAO());
         UserHandler userHandler = new UserHandler(userService);
 
         GameService gameService = new GameService(dao.getAuthDAO(), dao.getGameDAO(), dao.getUserDAO());
         GameHandler gameHandler = new GameHandler(gameService);
+
+        WebSocketHandler webSocketHandler = new WebSocketHandler(gameService, userService);
 
         // Register your endpoints and handle exceptions here.
         // Clears the application

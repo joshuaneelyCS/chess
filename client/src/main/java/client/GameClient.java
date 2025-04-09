@@ -1,18 +1,13 @@
 package client;
 
-import chess.ChessBoard;
-import chess.ChessGame;
+import chess.*;
 import client.websocket.NotificationHandler;
 import server.ServerFacade;
 import client.websocket.WebSocketFacade;
-import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
-
-import static websocket.messages.ServerMessage.ServerMessageType.*;
+import java.util.Collection;
+import java.util.List;
 
 public class GameClient implements Client {
 
@@ -25,6 +20,7 @@ public class GameClient implements Client {
     private WebSocketFacade ws;
     private int gameID;
     private String token;
+    private ChessGame clientGame;
 
     public GameClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
@@ -38,7 +34,7 @@ public class GameClient implements Client {
                 Options:
                 Redraw chess board: "redraw"
                 Show all legal moves: "legal" <square of piece>
-                Make a move: "move" <square of piece> <destination square>
+                Make a move: "move" <square of piece [Format: <Letter><Number>]> <destination square [Format: <Letter><Number>]>
                 Leave: "leave"
                 Resign: "resign"
                 Show this message: "help"
@@ -75,10 +71,36 @@ public class GameClient implements Client {
     }
 
     private String makeMove(String... params) {
-        // Check if legal move
-        // Update the local game
-        // Send the game to the websocket
-        return "";
+
+        int[] start = parseMove(params[0]);
+        int[] end = parseMove(params[1]);
+        ChessPiece.PieceType pieceType;
+
+        if (params.length > 2) {
+            pieceType = ChessPiece.PieceType.valueOf(params[2]);
+        } else {
+            pieceType = null;
+        }
+
+        ChessMove move = new ChessMove(new ChessPosition(start[0], start[1]), new ChessPosition(end[0], end[1]), pieceType);
+
+        // Update the local game. If invalid move, return error
+        try {
+            clientGame.makeMove(move);
+            ws.makeMove(move, token, gameID);
+            return "";
+        } catch (InvalidMoveException e) {
+            return (e.getMessage());
+        }
+    }
+
+    private int[] parseMove(String square) {
+        int[] move = new int[2];
+        // Convert the first character (A–H) to a number 0–7
+        move[1] = (square.toUpperCase().charAt(0) - 'A') + 1;
+        // Convert the second character (assumed to be 1–8) to 0–7
+        move[0] = Integer.parseInt(square.substring(1)) ;
+        return move;
     }
 
     private String drawLegalMoves(String... params) {
@@ -98,9 +120,14 @@ public class GameClient implements Client {
 
     }
 
-    public void setGame(int gameID, String playerColor) {
+    public void setGameInfo(int gameID, String playerColor) {
         this.gameID = gameID;
         this.playerColor = playerColor;
+    }
+
+    public void loadLocalGame(ChessGame game) {
+        clientGame = game;
+        drawBoard();
     }
 
     public void setToken(String token) {
@@ -117,9 +144,7 @@ public class GameClient implements Client {
     }
 
     public String drawBoard() {
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
-        ChessBoardUI.drawBoard(gameID, playerColor, board);
+        ChessBoardUI.drawBoard(gameID, playerColor, clientGame.getBoard());
         return "";
     }
 }

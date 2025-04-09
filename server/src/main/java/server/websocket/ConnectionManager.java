@@ -42,13 +42,13 @@ public class ConnectionManager {
     }
 
     // Broadcasts to all connections to the WebSocket
-    public void broadcast(String excludeAuthToken, ServerMessage serverMessage) throws IOException {
+    public void broadcast(String authToken, ServerMessage serverMessage, boolean exclude) throws IOException {
         Integer gameID = null;
 
         // Step 1: Find the gameID for the given authToken
         for (var entry : games.entrySet()) {
             for (var connection : entry.getValue()) {
-                if (connection.authToken.equals(excludeAuthToken)) {
+                if (connection.authToken.equals(authToken)) {
                     gameID = entry.getKey();
                     break;
                 }
@@ -66,7 +66,7 @@ public class ConnectionManager {
 
         // Step 3: Send the message to everyone except the sender
         for (var connection : connections) {
-            if (!connection.authToken.equals(excludeAuthToken)) {
+            if (exclude == false || !connection.authToken.equals(authToken)) {
                 if (connection.session.isOpen()) {
                     connection.send(serverMessage);
                 } else {

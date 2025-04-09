@@ -1,10 +1,13 @@
 package client.websocket;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
+import websocket.commands.MakeMoveCommand;
+import websocket.commands.ResignCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -15,8 +18,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static websocket.commands.UserGameCommand.CommandType.CONNECT;
-import static websocket.commands.UserGameCommand.CommandType.LEAVE;
+import static websocket.commands.UserGameCommand.CommandType.*;
 
 public class WebSocketFacade extends Endpoint {
 
@@ -64,9 +66,17 @@ public class WebSocketFacade extends Endpoint {
 
     public void joinGame(String token, int gameID) {
         try {
-            var command = new ConnectCommand(CONNECT, token, gameID);
-            var toSend = new Gson().toJson(command);
-            this.session.getBasicRemote().sendText(toSend);
+            var command = new ConnectCommand(token, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
+            throw new RuntimeException("Error sending connect command", ex);
+        }
+    }
+
+    public void makeMove(ChessMove move, String token, int gameID) {
+        try {
+            var command = new MakeMoveCommand(token, gameID, move);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new RuntimeException("Error sending connect command", ex);
         }
@@ -75,6 +85,15 @@ public class WebSocketFacade extends Endpoint {
     public void leaveGame(String token, int gameID) {
         try {
             var command = new LeaveCommand(LEAVE, token, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
+            throw new RuntimeException("Error: Check catch in WebSocketFacade");
+        }
+    }
+
+    public void resignGame(String token, int gameID) {
+        try {
+            var command = new ResignCommand(token, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new RuntimeException("Error: Check catch in WebSocketFacade");
