@@ -12,5 +12,6 @@ public interface GameDAO {
     GameData getGame(int id) throws DataAccessException;
     void setGame(int gameID, ChessGame game) throws DataAccessException;
     void removeGame(int gameID) throws DataAccessException;
+    void removePlayerFromGame(String playerColor, int gameID) throws DataAccessException;
     void deleteAllGames() throws DataAccessException;
 }

@@ -50,6 +50,11 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
+    public void removePlayerFromGame(String playerColor, int gameID) throws DataAccessException {
+
+    }
+
+    @Override
     public void joinGame(int id, String playerColor, String username) throws DataAccessException {
         GameData game = getGame(id);
         // TODO implement check if the right player is joining

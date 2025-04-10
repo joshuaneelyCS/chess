@@ -9,6 +9,7 @@ import java.io.IOException;
 public class Connection {
     public String authToken;
     public Session session;
+    public boolean locked = false;
 
     public Connection(String authToken, Session session) {
         this.authToken = authToken;
@@ -17,5 +18,13 @@ public class Connection {
 
     public void send(ServerMessage message) throws IOException {
         session.getRemote().sendString(new Gson().toJson(message));
+    }
+
+    public void close() throws IOException {
+        locked = true;
+    }
+
+    public boolean isLocked() {
+        return locked;
     }
 }

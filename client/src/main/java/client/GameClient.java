@@ -21,7 +21,6 @@ public class GameClient implements Client {
     private int gameID;
     private String token;
     private ChessGame clientGame;
-    private boolean locked = false;
     private boolean isObserver = false;
 
     public GameClient(String serverUrl, NotificationHandler notificationHandler) {
@@ -85,10 +84,6 @@ public class GameClient implements Client {
         }
     }
 
-    public void lockCurrGame() {
-        locked = true;
-    }
-
     private String resign() {
         ws.resignGame(token, gameID);
         return "You have resigned the game. Your opponent wins.";
@@ -100,10 +95,6 @@ public class GameClient implements Client {
     }
 
     private String makeMove(String... params) {
-
-        if (locked) {
-            return ("Sorry. The game is closed. No more moves can be made.");
-        }
 
         int[] start = parseMove(params[0]);
         int[] end = parseMove(params[1]);
@@ -177,7 +168,6 @@ public class GameClient implements Client {
         }
 
         ws.joinGame(token, gameID);
-        locked = false;
     }
 
     public String drawBoard() {

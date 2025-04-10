@@ -129,8 +129,32 @@ public class DatabaseGameDAO implements GameDAO {
     }
 
     @Override
+    public void removePlayerFromGame(String playerColor, int gameID) throws DataAccessException {
+
+        String columnName;
+        if (playerColor.equals("WHITE")) {
+            columnName = "white_username";
+        } else if (playerColor.equals("BLACK")) {
+            columnName = "black_username";
+        } else {
+            throw new DataAccessException("Invalid player color");
+        }
+
+        // Build the SQL dynamically with the correct column name
+        String statement = String.format("UPDATE games SET %s = NULL WHERE game_id = ?", columnName);
+
+        try {
+            DatabaseManager.executeUpdate(statement, gameID);
+        } catch (Exception e) {
+            throw new DataAccessException("Could not remove player from game");
+        }
+    }
+
+    @Override
     public void deleteAllGames() throws DataAccessException {
         var statement = "DELETE FROM games";
         DatabaseManager.executeUpdate(statement);
     }
+
+
 }

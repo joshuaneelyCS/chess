@@ -41,6 +41,18 @@ public class ConnectionManager {
         }
     }
 
+    public Session getSession(String authToken) {
+        for (var connections : games.values()) {
+            for (var connection : connections) {
+                if (connection.authToken.equals(authToken)) {
+                    return connection.session;
+                }
+            }
+        }
+        return null; // Not found
+    }
+
+
     // Broadcasts to all connections to the WebSocket
     public void broadcast(String authToken, ServerMessage serverMessage, boolean exclude) throws IOException {
         Integer gameID = null;

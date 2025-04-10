@@ -74,4 +74,6 @@ public class UserService {
     public void logout(String token) throws DataAccessException {
         authDAO.removeAuth(token);
     }
+
+
 }

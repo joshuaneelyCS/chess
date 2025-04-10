@@ -46,10 +46,10 @@ public class WebSocketHandler {
             case MAKE_MOVE -> {
                 // Re-parse as MakeMove to access the move field
                 MakeMoveCommand moveCommand = GSON.fromJson(message, MakeMoveCommand.class);
-                makeMove(moveCommand.getAuthToken(), moveCommand.getGameID(), moveCommand.getMove());
+                makeMove(moveCommand.getAuthToken(), moveCommand.getGameID(), moveCommand.getMove(), session);
             }
-            case LEAVE -> leave(command.getAuthToken());
-            case RESIGN -> resign(command.getAuthToken(), command.getGameID());
+            case LEAVE -> leave(command.getAuthToken(), command.getGameID());
+            case RESIGN -> resign(command.getAuthToken(), command.getGameID(), session);
         }
     }
 
@@ -61,8 +61,14 @@ public class WebSocketHandler {
     // This function broadcasts to users joined on a game
     private void connect(String authToken, int gameID, Session session) throws IOException {
 
-        validateGame(gameID);
+        if (!validGame(gameID, session)) {
+            throw new IOException("Invalid game ID");
+        }
+
+        validateAuth(authToken, session);
+
         var username = getUsername(authToken);
+
         String role = getPlayerRole(username, gameID);
 
         connections.add(gameID, authToken, session);
@@ -77,9 +83,27 @@ public class WebSocketHandler {
         connections.broadcast(authToken, serverMessage, true);
     }
 
-    private void makeMove(String authToken, int gameID, ChessMove move) throws IOException {
+    private void validateAuth(String authToken, Session session) throws IOException {
+        try {
+            gameService.confirmAuth(authToken);
+        } catch (DataAccessException e) {
+            var errorMessage = new ErrorMessage("Auth token is invalid");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            throw new IOException("Invalid Auth Token");
+        }
+    }
 
-        validateGame(gameID);
+    private void makeMove(String authToken, int gameID, ChessMove move, Session session) throws IOException {
+
+        // validateGame(gameID);
+        if (!isOpen(gameID)) {
+            var errorMessage = new ErrorMessage("This game is closed. No more moves can be made!");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            throw new IOException("Game closed!");
+        }
+
+        validateAuth(authToken, session);
+
         var username = getUsername(authToken);
         String role = getPlayerRole(username, gameID);
         ChessGame.TeamColor teamTurn;
@@ -90,20 +114,26 @@ public class WebSocketHandler {
         } else if (role.equals("BLACK")) {
             teamTurn = ChessGame.TeamColor.BLACK;
         } else {
-            throw new IOException("You are not allowed to make a move to. Observe only.");
+            var errorMessage = new ErrorMessage("You are observing the game. No actions can be made");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            throw new IOException("Observer tried to make a move!");
         }
 
         ChessGame game = getGame(gameID);
 
         // Ensures that it is the player's turn
         if (game.getTeamTurn() != teamTurn) {
-            throw new IOException("It is not you turn to move. Please wait and try again.");
+            var errorMessage = new ErrorMessage("It is not you turn to move. Please wait and try again.");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            throw new IOException("Player tried to move out of turn!");
         }
 
         ChessPiece piece = game.getBoard().getPiece(move.getStartPosition());
 
         if (piece.getTeamColor() != teamTurn) {
-            throw new IOException("This is not your piece. Please select a " + teamTurn.toString() + " piece.");
+            var errorMessage = new ErrorMessage("This is not your piece. Please select a " + teamTurn.toString() + " piece.");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            throw new IOException("Player tried to move an opponent's piece!");
         }
 
         // Updates the game in the database
@@ -112,7 +142,9 @@ public class WebSocketHandler {
             gameService.setGame(gameID, game);
 
         } catch (InvalidMoveException e) {
-            throw new IOException("Invalid move. Please try again.");
+            var errorMessage = new ErrorMessage("Invalid move. Please try again.");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            throw new IOException("Player tried an invalid move!");
         } catch (DataAccessException e) {
             throw new IOException(e);
         }
@@ -153,37 +185,80 @@ public class WebSocketHandler {
         return columnChar + Integer.toString(rowNumber);
     }
 
-   private void leave(String authToken) throws IOException {
-       var message = String.format("%s left the game.", getUsername(authToken));
+   private void leave(String authToken, int gameID) throws IOException {
+
+        String username = getUsername(authToken);
+
+       try {
+           String playerColor = getPlayerRole(getUsername(authToken), gameID);
+           if (!playerColor.equals("an observer")) {
+               gameService.removePlayerFromGame(playerColor, gameID);
+           }
+       } catch (DataAccessException e) {
+           throw new IOException(e);
+       }
+
+       var message = String.format("%s left the game.", username);
        var serverMessage = new NotificationMessage(message);
        connections.broadcast(authToken, serverMessage, true);
        connections.remove(authToken);
+
+
    }
 
-    private void resign(String authToken, int gameID) throws IOException {
-        validateGame(gameID);
+    private void resign(String authToken, int gameID, Session session) throws IOException {
+
+        // validateGame(gameID);
+        if (!isOpen(gameID)) {
+            var errorMessage = new ErrorMessage("This game is closed. No more actions can be made");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            throw new IOException("Game closed!");
+        }
+
+
+
+        // validateGame(gameID);
         String role = getPlayerRole(getUsername(authToken), gameID);
 
         if (role.equals("WHITE")) {
             role = "BLACK";
         } else if (role.equals("BLACK")) {
             role = "WHITE";
+        } else if (role.equals("an observer")) {
+            var errorMessage = new ErrorMessage("You are observing the game. No actions can be made");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            throw new IOException("Observer tried to resign the game!");
         }
 
         var message = String.format("%s resigned. %s won the game", getUsername(authToken), role);
         var serverMessage = new NotificationMessage(message);
-        connections.broadcast(authToken, serverMessage, true);
+        connections.broadcast(authToken, serverMessage, false);
         terminateGame(authToken, gameID);
     }
 
+    private boolean isOpen(int gameID) throws IOException {
+        var games = connections.games.get(gameID);
+        if (games != null) {
+            for (var game : games) {
+                return !game.isLocked();
+            }
+        }
+        return true;
+    }
+
     private void terminateGame(String authToken, int gameID) throws IOException {
-        connections.broadcast(authToken, new EndGameMessage(), false);
-        try {
+
+        var games = connections.games.get(gameID);
+        for (var game : games) {
+            game.close();
+        }
+
+        /*dtry {
             gameService.removeGame(gameID);
         } catch (DataAccessException e) {
             throw new IOException(e);
-        }
-        connections.remove(authToken);
+        }*/
+
     }
 
 
@@ -191,15 +266,18 @@ public class WebSocketHandler {
         try {
             return gameService.getUsername(authToken);
         } catch (DataAccessException e) {
-            return "Unknown User";
+            return "";
         }
     }
 
-    private void validateGame(int gameID) throws IOException {
+    private boolean validGame(int gameID, Session session) throws IOException {
         try {
             if (!gameService.validGame(gameID)) {
-                throw new IOException("Error: Game does not exist");
+                var errorMessage = new ErrorMessage("This game does not exist!");
+                session.getRemote().sendString(new Gson().toJson(errorMessage));
+                return false;
             }
+            return true;
         } catch (DataAccessException e) {
             throw new IOException("Server error: " + e.getMessage());
         }

@@ -56,6 +56,10 @@ public class GameService {
         }
     }
 
+    public void confirmAuth(String token) throws DataAccessException {
+        authDAO.getAuth(token);
+    }
+
     public void joinGame(JoinGameRequest req) throws DataAccessException, GameAlreadyTakenException, InvalidColorException {
         String username = getUsername(req.token);
         gameDAO.joinGame(req.gameID, req.playerColor, username);
@@ -73,6 +77,10 @@ public class GameService {
 
     public String getUsername(String token) throws DataAccessException {
         return authDAO.getAuth(token).getUsername();
+    }
+
+    public void removePlayerFromGame(String playerColor, int gameID) throws DataAccessException {
+        gameDAO.removePlayerFromGame(playerColor, gameID);
     }
 
     public String getPlayerColor(String username, int gameID) throws DataAccessException {

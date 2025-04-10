@@ -46,7 +46,6 @@ public class WebSocketFacade extends Endpoint {
                         case NOTIFICATION -> serverMessage = new Gson().fromJson(message, NotificationMessage.class);
                         case ERROR -> serverMessage = new Gson().fromJson(message, ErrorMessage.class);
                         case LOAD_GAME -> serverMessage = new Gson().fromJson(message, LoadGameMessage.class);
-                        case END_GAME -> serverMessage = new Gson().fromJson(message, EndGameMessage.class);
                         default -> throw new IllegalArgumentException("Unknown server message type: " + type);
                     }
 
