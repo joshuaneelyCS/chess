@@ -8,10 +8,7 @@ import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.ResignCommand;
-import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -49,6 +46,7 @@ public class WebSocketFacade extends Endpoint {
                         case NOTIFICATION -> serverMessage = new Gson().fromJson(message, NotificationMessage.class);
                         case ERROR -> serverMessage = new Gson().fromJson(message, ErrorMessage.class);
                         case LOAD_GAME -> serverMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                        case END_GAME -> serverMessage = new Gson().fromJson(message, EndGameMessage.class);
                         default -> throw new IllegalArgumentException("Unknown server message type: " + type);
                     }
 

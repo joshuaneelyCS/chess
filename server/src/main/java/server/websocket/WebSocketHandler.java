@@ -94,6 +94,7 @@ public class WebSocketHandler {
         }
 
         ChessGame game = getGame(gameID);
+
         // Ensures that it is the player's turn
         if (game.getTeamTurn() != teamTurn) {
             throw new IOException("It is not you turn to move. Please wait and try again.");
@@ -101,13 +102,17 @@ public class WebSocketHandler {
 
         ChessPiece piece = game.getBoard().getPiece(move.getStartPosition());
 
+        if (piece.getTeamColor() != teamTurn) {
+            throw new IOException("This is not your piece. Please select a " + teamTurn.toString() + " piece.");
+        }
+
         // Updates the game in the database
         try {
             game.makeMove(move);
             gameService.setGame(gameID, game);
 
         } catch (InvalidMoveException e) {
-            throw new IOException(e);
+            throw new IOException("Invalid move. Please try again.");
         } catch (DataAccessException e) {
             throw new IOException(e);
         }
@@ -118,9 +123,26 @@ public class WebSocketHandler {
         String message = username + " moved " +
                 piece.getPieceType().toString() + " " +
                 parsePosition(move.getStartPosition()) + " to " + parsePosition(move.getEndPosition());
+
         var notificationMessage = new NotificationMessage(message);
         connections.broadcast(authToken, notificationMessage, true);
 
+        checkStatus(authToken, game, teamTurn == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE, teamTurn);
+    }
+
+    private void checkStatus(String authToken, ChessGame game, ChessGame.TeamColor OpponentTeam, ChessGame.TeamColor teamTurn) throws IOException {
+        NotificationMessage notificationMessage;
+        String message;
+        if (game.isInCheckmate(OpponentTeam)) {
+            message = OpponentTeam.toString() + " is in checkmate! " + teamTurn.toString() + "wins!";
+            notificationMessage = new NotificationMessage(message);
+            connections.broadcast(authToken, notificationMessage, false);
+            connections.broadcast(authToken, new EndGameMessage(), false);
+        } else if (game.isInCheck(OpponentTeam)) {
+            message = OpponentTeam.toString() + " is in check!";
+            notificationMessage = new NotificationMessage(message);
+            connections.broadcast(authToken, notificationMessage, false);
+        }
     }
 
     private String parsePosition(ChessPosition position) {
@@ -149,8 +171,12 @@ public class WebSocketHandler {
         var message = String.format("%s resigned. %s won the game", getUsername(authToken), role);
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(authToken, serverMessage, true);
+        connections.broadcast(authToken, new EndGameMessage(), false);
+        gameService.removeGame(gameID);
         connections.remove(authToken);
     }
+
+
 
     private String getUsername(String authToken) {
         try {

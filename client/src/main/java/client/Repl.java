@@ -117,6 +117,7 @@ public class Repl implements NotificationHandler {
                 case NOTIFICATION -> displayNotification(((NotificationMessage) message).getMessage());
                 case ERROR -> displayError(((ErrorMessage) message).getMessage());
                 case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
+                case END_GAME -> lockGame();
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -127,6 +128,10 @@ public class Repl implements NotificationHandler {
         System.out.print("");
         gameClient.loadLocalGame(game);
         printPrompt();
+    }
+
+    private void lockGame() {
+        gameClient.lockCurrGame();
     }
 
     private void displayError(String message) {

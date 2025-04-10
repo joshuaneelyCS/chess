@@ -42,6 +42,14 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
+    public void removeGame(int gameID) throws DataAccessException {
+        if (!games.containsKey(gameID)) {
+            throw new DataAccessException("Game with ID " + gameID + " not found");
+        }
+        games.remove(gameID);
+    }
+
+    @Override
     public void joinGame(int id, String playerColor, String username) throws DataAccessException {
         GameData game = getGame(id);
         game.setTeam(playerColor, username);

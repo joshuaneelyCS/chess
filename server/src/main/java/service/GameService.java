@@ -109,6 +109,10 @@ public class GameService {
         gameDAO.setGame(gameID, game);
     }
 
+    public void removeGame(int gameID) throws DataAccessException {
+        gameDAO.removeGame(gameID);
+    }
+
     public void clearDatabase() throws DataAccessException {
 
         gameDAO.deleteAllGames();

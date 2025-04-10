@@ -29,6 +29,14 @@ public class ChessBoardUITest {
     }
 
     @Test
+    void printWhiteBoard3() {
+        ChessGame game = new ChessGame();
+        ChessBoard board = game.getBoard();
+        board.resetBoard();
+        ChessBoardUI.drawBoard(12345, "WHITE", board, null);
+    }
+
+    @Test
     void printBlackBoard() {
         ChessGame game = new ChessGame();
         ChessBoard board = game.getBoard();

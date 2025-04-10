@@ -111,47 +111,15 @@ public class ChessBoardUI {
 
         if ("BLACK".equals(playerColor)) {
             for (int squareRow = BOARD_SIZE_IN_SQUARES - 1; squareRow >= 0; --squareRow) {
-                for (ChessMove chessMove : highlightedTiles) {
-                    if (chessMove.getStartPosition().getRow() == 8 - Integer.parseInt(rowNum)) {
-                        if (chessMove.getStartPosition().getColumn() == squareRow) {
-                            if (tileColor.equals(SET_BG_COLOR_WHITE)) {
-                                tileColor = SET_BG_COLOR_YELLOW;
-                            }
-                            if (tileColor.equals(SET_BG_COLOR_WHITE)) {
-                                tileColor = SET_BG_COLOR_DARK_YELLOW;
-                            }
-                        }
-                    }
-                    if (chessMove.getEndPosition().getRow() == Integer.parseInt(rowNum)) {
-                        if (chessMove.getEndPosition().getColumn() == squareRow) {
-                            tileColor = SET_BG_COLOR_GREEN;
-                        }
-                    }
+                if (highlightedTiles != null) {
+                    tileColor = getTileColor(rowNum, highlightedTiles, squareRow, tileColor);
                 }
                 tileColor = drawSquare(out, row, tileColor, squareRow);
             }
         } else {
             for (int squareRow = 0; squareRow < BOARD_SIZE_IN_SQUARES; ++squareRow) {
-                for (ChessMove chessMove : highlightedTiles) {
-                    if (chessMove.getStartPosition().getRow() == Integer.parseInt(rowNum)) {
-                        if (chessMove.getStartPosition().getColumn() == squareRow) {
-                            if (tileColor.equals(SET_BG_COLOR_WHITE)) {
-                                tileColor = SET_BG_COLOR_YELLOW;
-                            }
-                            if (tileColor.equals(SET_BG_COLOR_BLACK)) {
-                                tileColor = SET_BG_COLOR_DARK_YELLOW;
-                            }
-                        }
-                    }
-                    if (chessMove.getEndPosition().getRow() == Integer.parseInt(rowNum)) {
-                        if (chessMove.getEndPosition().getColumn() == squareRow) {
-                            if (tileColor.equals(SET_BG_COLOR_WHITE)) {
-                                tileColor = SET_BG_COLOR_GREEN;
-                            } else {
-                                tileColor = SET_BG_COLOR_DARK_GREEN;
-                            }
-                        }
-                    }
+                if (highlightedTiles != null) {
+                    tileColor = getTileColor(rowNum, highlightedTiles, squareRow, tileColor);
                 }
                 tileColor = drawSquare(out, row, tileColor, squareRow);
             }
@@ -160,6 +128,32 @@ public class ChessBoardUI {
         out.print(" ");
         out.print(rowNum);
         out.print(" \n");
+    }
+
+    private static String getTileColor(String rowNum, Collection<ChessMove> highlightedTiles, int squareRow, String tileColor) {
+        for (ChessMove chessMove : highlightedTiles) {
+            if (chessMove.getStartPosition().getRow() == Integer.parseInt(rowNum)) {
+                if (chessMove.getStartPosition().getColumn() - 1 == squareRow) {
+                    if (tileColor.equals(SET_BG_COLOR_WHITE)) {
+                        tileColor = SET_BG_COLOR_YELLOW;
+                    }
+                    if (tileColor.equals(SET_BG_COLOR_BLACK)) {
+                        tileColor = SET_BG_COLOR_DARK_YELLOW;
+                    }
+                }
+            }
+            if (chessMove.getEndPosition().getRow() == Integer.parseInt(rowNum)) {
+                if (chessMove.getEndPosition().getColumn() - 1 == squareRow) {
+                    if (tileColor.equals(SET_BG_COLOR_WHITE)) {
+                        tileColor = SET_BG_COLOR_GREEN;
+                    }
+                    if (tileColor.equals(SET_BG_COLOR_BLACK)) {
+                        tileColor = SET_BG_COLOR_DARK_GREEN;
+                    }
+                }
+            }
+        }
+        return tileColor;
     }
 
     private static String drawSquare(PrintStream out, ChessPiece[] row, String tileColor, int squareRow) {

@@ -115,6 +115,20 @@ public class DatabaseGameDAO implements GameDAO {
     }
 
     @Override
+    public void removeGame(int gameID) throws DataAccessException {
+        var statement = """
+            DELETE FROM games
+            WHERE game_id = ?
+            """;
+
+        try {
+            DatabaseManager.executeUpdate(statement, gameID);
+        } catch (Exception e) {
+            throw new DataAccessException("Could not remove game from database");
+        }
+    }
+
+    @Override
     public void deleteAllGames() throws DataAccessException {
         var statement = "DELETE FROM games";
         DatabaseManager.executeUpdate(statement);
