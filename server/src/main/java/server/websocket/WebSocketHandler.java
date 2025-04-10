@@ -127,17 +127,19 @@ public class WebSocketHandler {
         var notificationMessage = new NotificationMessage(message);
         connections.broadcast(authToken, notificationMessage, true);
 
-        checkStatus(authToken, game, teamTurn == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE, teamTurn);
+        checkStatus(authToken, gameID, game, teamTurn == ChessGame.TeamColor.WHITE ?
+                ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE, teamTurn);
     }
 
-    private void checkStatus(String authToken, ChessGame game, ChessGame.TeamColor OpponentTeam, ChessGame.TeamColor teamTurn) throws IOException {
+    private void checkStatus(String authToken, int gameID, ChessGame game, ChessGame.TeamColor OpponentTeam,
+                             ChessGame.TeamColor teamTurn) throws IOException {
         NotificationMessage notificationMessage;
         String message;
         if (game.isInCheckmate(OpponentTeam)) {
             message = OpponentTeam.toString() + " is in checkmate! " + teamTurn.toString() + "wins!";
             notificationMessage = new NotificationMessage(message);
             connections.broadcast(authToken, notificationMessage, false);
-            connections.broadcast(authToken, new EndGameMessage(), false);
+            terminateGame(authToken, gameID);
         } else if (game.isInCheck(OpponentTeam)) {
             message = OpponentTeam.toString() + " is in check!";
             notificationMessage = new NotificationMessage(message);
@@ -171,11 +173,18 @@ public class WebSocketHandler {
         var message = String.format("%s resigned. %s won the game", getUsername(authToken), role);
         var serverMessage = new NotificationMessage(message);
         connections.broadcast(authToken, serverMessage, true);
-        connections.broadcast(authToken, new EndGameMessage(), false);
-        gameService.removeGame(gameID);
-        connections.remove(authToken);
+        terminateGame(authToken, gameID);
     }
 
+    private void terminateGame(String authToken, int gameID) throws IOException {
+        connections.broadcast(authToken, new EndGameMessage(), false);
+        try {
+            gameService.removeGame(gameID);
+        } catch (DataAccessException e) {
+            throw new IOException(e);
+        }
+        connections.remove(authToken);
+    }
 
 
     private String getUsername(String authToken) {

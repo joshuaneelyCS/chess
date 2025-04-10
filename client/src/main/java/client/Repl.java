@@ -75,6 +75,7 @@ public class Repl implements NotificationHandler {
 
         gameClient.setGameInfo(gameID, playerColor);
         gameClient.setToken(token);
+        gameClient.setIsObserver(mainClient.getIsObserver());
 
         try {
             gameClient.beginSession();

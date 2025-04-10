@@ -22,6 +22,7 @@ public class GameClient implements Client {
     private String token;
     private ChessGame clientGame;
     private boolean locked = false;
+    private boolean isObserver = false;
 
     public GameClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
@@ -31,7 +32,16 @@ public class GameClient implements Client {
 
     @Override
     public String help() {
-        return """
+        if (isObserver) {
+            return """
+                Options:
+                Redraw chess board: "redraw"
+                Show all legal moves: "legal" <square of piece>
+                Leave: "leave"
+                Show this message: "help"
+                """;
+        } else {
+            return """
                 Options:
                 Redraw chess board: "redraw"
                 Show all legal moves: "legal" <square of piece>
@@ -40,6 +50,7 @@ public class GameClient implements Client {
                 Resign: "resign"
                 Show this message: "help"
                 """;
+        }
     }
 
     @Override
@@ -51,9 +62,21 @@ public class GameClient implements Client {
             return switch (cmd) {
                 case "redraw" -> drawBoard();
                 case "legal" -> drawLegalMoves(params);
-                case "move" -> makeMove(params);
+                case "move" -> {
+                    if (!isObserver) {
+                        yield makeMove(params);
+                    } else {
+                        yield help();
+                    }
+                }
                 case "leave" -> leave();
-                case "resign" -> resign();
+                case "resign" -> {
+                    if (!isObserver) {
+                        yield resign();
+                    } else {
+                        yield help();
+                    }
+                }
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -160,5 +183,9 @@ public class GameClient implements Client {
     public String drawBoard() {
         ChessBoardUI.drawBoard(gameID, playerColor, clientGame.getBoard(), null);
         return "";
+    }
+
+    public void setIsObserver(boolean isObserver) {
+        this.isObserver = isObserver;
     }
 }

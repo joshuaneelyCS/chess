@@ -15,6 +15,7 @@ public class MainClient implements Client {
     private String token;
     private int gameID;
     private String playerColor = "WHITE";
+    private boolean isObserver = false;
 
     public MainClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -122,6 +123,7 @@ public class MainClient implements Client {
 
                 server.joinGame(this.token, params[1], gameID);
                 state = State.IN_GAME;
+                isObserver = false;
                 return String.format("Successfully joined game %s as %s", game.getGameName(), params[1]);
             } catch (Exception ex) {
                 throw new Exception("Could not join game. Color already taken");
@@ -151,6 +153,7 @@ public class MainClient implements Client {
                 playerColor = "WHITE";
 
                 state = State.IN_GAME;
+                isObserver = true;
                 return String.format("Observing game %s", game.getGameName());
             } catch (Exception ex) {
                 throw new Exception(ex.getMessage());
@@ -165,5 +168,9 @@ public class MainClient implements Client {
 
     public int getGameID() {
         return gameID;
+    }
+
+    public boolean getIsObserver() {
+        return isObserver;
     }
 }

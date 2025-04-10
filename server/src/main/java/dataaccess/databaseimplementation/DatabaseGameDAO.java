@@ -70,7 +70,7 @@ public class DatabaseGameDAO implements GameDAO {
         try (var resultSet = DatabaseManager.retrieveData(checkStatement, id)) {
             if (resultSet.next()) {
                 String existingUser = resultSet.getString(playerColor);
-                if (existingUser != null && !existingUser.isEmpty()) {
+                if (existingUser != null && !existingUser.isEmpty() && !existingUser.equals(username)) {
                     throw new GameAlreadyTakenException("The selected color is already taken by another player.");
                 }
             } else {
