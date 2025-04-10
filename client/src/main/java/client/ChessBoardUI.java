@@ -87,7 +87,8 @@ public class ChessBoardUI {
         }
     }
 
-    private static void drawRowOfSquares(PrintStream out, String rowNum, ChessPiece[] row, String playerColor, Collection<ChessMove> highlightedTiles) {
+    private static void drawRowOfSquares(PrintStream out, String rowNum, ChessPiece[] row,
+                                         String playerColor, Collection<ChessMove> highlightedTiles) {
         out.print(SET_BG_COLOR_WHITE);
         out.print(SET_TEXT_COLOR_BLACK);
 
@@ -195,7 +196,8 @@ public class ChessBoardUI {
     }
 
     private static String toggleTileColor(String current) {
-        return current.equals(SET_BG_COLOR_WHITE) || current.equals(SET_BG_COLOR_GREEN) || current.equals(SET_BG_COLOR_YELLOW)? SET_BG_COLOR_BLACK : SET_BG_COLOR_WHITE;
+        return current.equals(SET_BG_COLOR_WHITE) || current.equals(SET_BG_COLOR_GREEN) ||
+                current.equals(SET_BG_COLOR_YELLOW)? SET_BG_COLOR_BLACK : SET_BG_COLOR_WHITE;
     }
 
     private static void setWhite(PrintStream out) {

@@ -163,17 +163,17 @@ public class WebSocketHandler {
                 ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE, teamTurn);
     }
 
-    private void checkStatus(String authToken, int gameID, ChessGame game, ChessGame.TeamColor OpponentTeam,
+    private void checkStatus(String authToken, int gameID, ChessGame game, ChessGame.TeamColor opponentTeam,
                              ChessGame.TeamColor teamTurn) throws IOException {
         NotificationMessage notificationMessage;
         String message;
-        if (game.isInCheckmate(OpponentTeam)) {
-            message = OpponentTeam.toString() + " is in checkmate! " + teamTurn.toString() + "wins!";
+        if (game.isInCheckmate(opponentTeam)) {
+            message = opponentTeam.toString() + " is in checkmate! " + teamTurn.toString() + "wins!";
             notificationMessage = new NotificationMessage(message);
             connections.broadcast(authToken, notificationMessage, false);
             terminateGame(authToken, gameID);
-        } else if (game.isInCheck(OpponentTeam)) {
-            message = OpponentTeam.toString() + " is in check!";
+        } else if (game.isInCheck(opponentTeam)) {
+            message = opponentTeam.toString() + " is in check!";
             notificationMessage = new NotificationMessage(message);
             connections.broadcast(authToken, notificationMessage, false);
         }
@@ -252,12 +252,6 @@ public class WebSocketHandler {
         for (var game : games) {
             game.close();
         }
-
-        /*dtry {
-            gameService.removeGame(gameID);
-        } catch (DataAccessException e) {
-            throw new IOException(e);
-        }*/
 
     }
 

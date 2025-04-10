@@ -135,7 +135,6 @@ public class MainClient implements Client {
     private String observeGame(String... params) throws Exception {
         if (params.length == 1) {
             try {
-                // TODO observe vs play game
                 // find Game ID
                 GameData[] games = server.listGames(token);
 
