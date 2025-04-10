@@ -53,7 +53,7 @@ public class ConnectionManager {
                     break;
                 }
             }
-            if (gameID != null) break;
+            if (gameID != null) { break; }
         }
 
         if (gameID == null) { return; } // AuthToken not found in any game
